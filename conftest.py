@@ -5,6 +5,8 @@ from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from utils.config import get_url
 from pages.authorization_page import AuthPage
+from pages.deal_site_order_page import SiteOrderPage
+from api.crm_api_client import ApiClient
 
 @pytest.fixture(scope = 'session')
 def browser():
@@ -25,6 +27,7 @@ def pytest_addoption(parser):
 
 @pytest.fixture
 def auth_page(browser, request):
+    """ Фикстура для страницы авторизации """
     env = request.config.getoption("--env")
     specific_url = request.config.getoption("--url")
     base_url = get_url(env, specific_url)
