@@ -13,12 +13,10 @@ class SiteOrderPage(DealButiquesPage):
         
     def check_method_status(self):
         """ Отправляет првоеряет доступность rest-метода """
-        self.api.get(self.webhook)
-        return self.api.status_code()
+        response = self.api.get(self.webhook)
+        return response.status_code
     
     def make_site_order(self, data):
         """ Отправляет пакет с заказом с сайта """
-        self.api.post(self.webhook, data)
-        status = self.api.status_code()
-        response = self.api.response_json()
-        return status, response
+        response = self.api.post(self.webhook, data)
+        return response.status_code, response.json()
