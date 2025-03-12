@@ -24,8 +24,6 @@ class DealsLocators:
         CREATE_BUTTON = (By.CSS_SELECTOR, ".ui-btn-main > .ui-btn-text")
         # Кнопка направления (воронок) сделок
         ALL_DEALS = (By.XPATH, '//*[@class="ui-btn-text" and text()="Все сделки"]')
-        # Направление (воронка) сделки из списка
-        FUNNEL_LOCATOR = (By.XPATH, '//*[@class = "menu-popup-item-text" and text()="Москва"]')
         # Вкладка 'Товары' (для перехода в товарную часть)
         PRODUCTS_BUTTON = (By.CSS_SELECTOR, "#crm_scope_detail_c_deal__tab_products .main-buttons-item-text-box")
         # Кнопка 'Выбрать товар' в товарной части
@@ -36,6 +34,11 @@ class DealsLocators:
         SAVE_DEAL_BUTTON = (By.CSS_SELECTOR,".ui-entity-section > .ui-btn-success")
         # Чекбокс для добавления товара в товарную часть
         PRODUCT_CHECKBOX = (By.CSS_SELECTOR, ".col_checkbox > input")
+        
+        @staticmethod
+        def funnel_locator(catgory_name):
+            """ Возвращает локатор направления (воронку) сделки из списка """
+            return (By.XPATH, f'//*[@class = "menu-popup-item-text" and text()="{catgory_name}"]')
         
         @staticmethod
         def entity_locator(value):
@@ -57,14 +60,16 @@ class DealsLocators:
         """ Локаторы для проверки """
         # Заголовок страницы 'Сделки'
         PAGE_TITLE = (By.ID, "pagetitle")
-        # Текущая воронка (направление) сделки
-        CURRENT_FUNNEL = (By.XPATH, '//*[@class="ui-btn-text" and text()="Москва"]')
         # Область товарной части
         PRODUCT_BLOCK = (By.CSS_SELECTOR, ".items_table_wrapper.product-wrapper")
         # Попап поиска товара в товарной части
         PRODUCT_SEARCH_POPUP = (By.ID, "popup-message")
-        # ~ (By.XPATH, '//input[@class = "crm-item-name-inp"]')
         
+        @staticmethod
+        def current_funnel(category_name):
+            """ Возвращает локатор текущей воронки (направление) сделки """
+            return (By.XPATH, f'//*[@class="ui-btn-text" and text()="{category_name}"]')
+            
         @staticmethod
         def entity_block(entity):
             """ Возвращает локатор для блока компании/контакта с 

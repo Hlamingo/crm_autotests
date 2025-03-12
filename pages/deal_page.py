@@ -8,31 +8,29 @@ class DealPage(BasePage):
         super().__init__(driver, base_url)
         self.locators = DealsLocators
         self.base_url = f"{base_url}/crm/deal/"
-        self.category_id = 0
-        self.company_name = "[ITGrade] Тестовая компания с ИНН/КПП и адресом1"
-        self.company_id = 16360
-        self.contact_name = "Kейт тест тест Фамилия Фамилия Фамилия Фамилия Фам"
-        self.contact_id = 195342
-        self.product_id = 110145
     
     def checking_deal_page_is_open(self):
         """ Возвращает заголовок раздела 'Сделки' """
         return self.find_element(self.locators.Result.PAGE_TITLE).text
 
-    def click_to_deal_funnel_button(self):
+    def click_to_deal_funnel_button(self, category_name):
         """ Кликает на кнопку направления сделок и ищет из выпадающего 
         списка воронку 'Бутики'"""
         self.find_element(self.locators.Buttons.ALL_DEALS).click()
-        butiques_funnel = self.find_elements(self.locators.Buttons.FUNNEL_LOCATOR)
+        butiques_funnel = self.find_elements(self.locators.Buttons.funnel_locator(category_name))
         return butiques_funnel[1].text
         
-    def select_boutiques_funnel(self):
+    def select_boutiques_funnel(self, category_name):
         """ Наводит курсор и кликает на воронку 'Бутики' в выпадающем 
         списке и возвращает название кнопки 'Бутики' выбора воронок"""
-        butiques_funnel = self.find_elements(self.locators.Buttons.FUNNEL_LOCATOR)
+        butiques_funnel = self.find_elements(
+            self.locators.Buttons.funnel_locator(category_name)
+            )
         self.actions_move_to_element(butiques_funnel[1])
         butiques_funnel[1].click()
-        return self.find_element(self.locators.Result.CURRENT_FUNNEL).text
+        return self.find_element(
+            self.locators.Result.current_funnel(category_name)
+            ).text
         
     def click_create_deal_button(self):
         """ Кликает на кнопку 'Создать' """
@@ -53,22 +51,22 @@ class DealPage(BasePage):
         entity.click()
         return self.find_element(entity_block_locator, 30).is_displayed()
     
-    def enter_company(self):
+    def enter_company(self, company_id, company_name):
         """ Выбирает компанию в сделке и возвращает True, если появился 
         блок с Телефоном и email """
         return self.enter_value_to_field(
             self.locators.Fields.COMPANY,
-            self.company_name,
-            self.locators.Result.entity_block(f"COMPANY_{self.company_id}")
+            company_name,
+            self.locators.Result.entity_block(f"COMPANY_{company_id}")
         )
     
-    def enter_contact(self):
+    def enter_contact(self, contact_id, contact_name):
         """ Выбирает контакт в сделке и возвращает True, если появился 
         блок с Телефоном и email """
         return self.enter_value_to_field(
             self.locators.Fields.CONTACT,
-            self.contact_name,
-            self.locators.Result.entity_block(f"CONTACT_{self.contact_id}")
+            contact_name,
+            self.locators.Result.entity_block(f"CONTACT_{contact_id}")
         )
         
     def enter_close_date(self, num):

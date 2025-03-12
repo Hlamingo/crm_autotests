@@ -1,5 +1,6 @@
 #Test Data
-test_data/
+data/*
+!data/* .py
 
 # Allure reports
 allure-results/
