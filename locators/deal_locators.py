@@ -24,8 +24,6 @@ class DealsLocators:
         CREATE_BUTTON = (By.CSS_SELECTOR, ".ui-btn-main > .ui-btn-text")
         # Кнопка направления (воронок) сделок
         ALL_DEALS = (By.XPATH, '//*[@class="ui-btn-text" and text()="Все сделки"]')
-        # Вкладка 'Товары' (для перехода в товарную часть)
-        PRODUCTS_BUTTON = (By.CSS_SELECTOR, "#crm_scope_detail_c_deal__tab_products .main-buttons-item-text-box")
         # Кнопка 'Выбрать товар' в товарной части
         SELECT_PRODUCT = (By.ID,"deal_product_editor_select_product_button")
         # Кнопка "Добавить" (выбранный товар в сделку) 
@@ -34,6 +32,15 @@ class DealsLocators:
         SAVE_DEAL_BUTTON = (By.CSS_SELECTOR,".ui-entity-section > .ui-btn-success")
         # Чекбокс для добавления товара в товарную часть
         PRODUCT_CHECKBOX = (By.CSS_SELECTOR, ".col_checkbox > input")
+        
+        @staticmethod
+        def products_button(category):
+            """ Возвращает локатор кнопки  'Товары' (для перехода в 
+            товарную часть)"""
+            if category["NAME"] == "Москва":
+                return (By.CSS_SELECTOR, "#crm_scope_detail_c_deal__tab_products .main-buttons-item-text-box")
+            else:
+                return (By.CSS_SELECTOR, f"#crm_scope_detail_c_deal_{category['ID']}__tab_products .main-buttons-item-text-box")
         
         @staticmethod
         def funnel_locator(catgory_name):

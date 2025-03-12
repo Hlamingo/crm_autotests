@@ -1,8 +1,23 @@
 from pages.deal_boutiques_page import DealButiquesPage
+from data.deal_data import DealButiquesData
+from data.deal_category import DEAL_CATEGORY
 import pytest
 import time
 from datetime import datetime 
 import allure
+
+@pytest.fixture(params=[
+    DealButiquesData(
+        "[ITGrade] Тестовая компания с ИНН/КПП и адресом1", 
+        16360, 
+        "Тест3 Комшуков",
+        793411,
+        40440,
+        "Улица Тестовая, д.100"
+        )
+    ])
+def deal_data(request):
+    return request.param
 
 @pytest.fixture
 def deal_boutiques_page(browser, base_url):
@@ -14,12 +29,10 @@ class TestDealBoutiques:
     """ Проверка создания сделки """
     
     @pytest.fixture(autouse = True)
-    def setup(self, deal_boutiques_page):
+    def setup(self, deal_boutiques_page, deal_data):
         self.deal_page = deal_boutiques_page
-        self.deal_page.contact_name = "Тест3 Комшуков"
-        self.deal_page.contact_id = 793411
-        self.deal_page.category_id = 4
-        self.deal_page.product_id = 40440
+        self.deal_data = deal_data
+        self.deal_category = DEAL_CATEGORY["Бутики"]
     
     @pytest.mark.order(1)
     @allure.story("Открытие страницы 'Сделки'")
@@ -33,15 +46,17 @@ class TestDealBoutiques:
     @allure.story("Клик на кнопку направления сделок")
     def test_click_to_deal_funnel_button(self):
         """ Проверка нажатия кнопки направления сделок """
-        funnel = self.deal_page.click_to_deal_funnel_button()
-        assert funnel.lower().strip() == "бутики"
+        category_name = self.deal_category["NAME"]
+        funnel = self.deal_page.click_to_deal_funnel_button(category_name)
+        assert funnel.lower().strip() == category_name.lower()
     
     @pytest.mark.order(3)
     @allure.story("Выбор воронки 'Бутики'")
     def test_select_boutiques_funnel(self):
         """ Проверка перехода в воронку 'Бутики' """
-        funnel = self.deal_page.select_boutiques_funnel()
-        assert  funnel.lower().strip() == "бутики"
+        category_name = self.deal_category["NAME"]
+        funnel = self.deal_page.select_boutiques_funnel(category_name)
+        assert  funnel.lower().strip() == category_name.lower()
     
     @pytest.mark.order(4)
     @allure.story("Клик на кнопку 'Создать'")
@@ -49,7 +64,7 @@ class TestDealBoutiques:
         """ Проверка при клике на кнопку 'Создать' """
         self.deal_page.click_create_deal_button()
         assert self.deal_page.url_to_be(
-            f"{self.deal_page.base_url}details/0/?category_id={self.deal_page.category_id}",
+            f"{self.deal_page.base_url}details/0/?category_id={self.deal_category['ID']}",
             20
         )
     
@@ -63,19 +78,25 @@ class TestDealBoutiques:
     @allure.story("Добавление компании в сделке")
     def test_enter_company(self):
         """ Проверяет добавление компании в сделке """
-        assert self.deal_page.enter_company()
+        assert self.deal_page.enter_company(
+            self.deal_data.company["ID"], self.deal_data.company["NAME"]
+        )
     
     @pytest.mark.order(7)
     @allure.story("Добавление контакта в сделке")
     def test_enter_contact(self):
         """ Проверяет добавление контакта в сделке"""
-        assert self.deal_page.enter_contact()
+        assert self.deal_page.enter_contact(
+            self.deal_data.contact["ID"], self.deal_data.contact["NAME"]
+        )
     
     @pytest.mark.order(8)
     @allure.story("Добавление адреса самовывоза в сделке")
     def test_enter_store_address(self):
         """ Проверяет добавление адреса самовывоза в сделке"""
-        assert self.deal_page.enter_store_address() == self.deal_page.store_address_name
+        assert self.deal_page.enter_store_address(
+            self.deal_data.store_address_name
+            ) == self.deal_data.store_address_name
     
     @pytest.mark.order(9)
     @allure.story("Ввод значения в поле 'Дата завершения'")
@@ -89,7 +110,7 @@ class TestDealBoutiques:
     @allure.story("Переход в товарную часть")
     def test_open_products_block(self):
         """ Проверка перехода в товарную часть """
-        assert self.deal_page.open_products_block()
+        assert self.deal_page.open_products_block(self.deal_category)
     
     @pytest.mark.order(11)
     @allure.story("Нажатие на кнопку 'Выбрать товар'")
@@ -101,15 +122,15 @@ class TestDealBoutiques:
     @allure.story("Клика на кнопку 'Добавить товар'")
     def test_product_search(self):
         """ Проверяет поиск товара """
-        product = self.deal_page.product_search(self.deal_page.product_id)
-        assert str(self.deal_page.product_id) in product
+        product = self.deal_page.product_search(self.deal_data.product_id)
+        assert str(self.deal_data.product_id) in product
     
     @pytest.mark.order(13)
     @allure.story("Выбор товара")
     def test_select_product(self):
         """ Проверка выбора товара перед сохранением сделки """
-        product = self.deal_page.select_product(self.deal_page.product_id, 0)
-        assert str(self.deal_page.product_id) in product
+        product = self.deal_page.select_product(self.deal_data.product_id, 0)
+        assert str(self.deal_data.product_id) in product
     
     @pytest.mark.order(14)
     @allure.story("Сохранение сделки")
@@ -122,6 +143,5 @@ class TestDealBoutiques:
     def test_check_product_in_deal(self):
         """ Проверяет содержание товара в товарной части сделки после 
         сохранения """
-        product = self.deal_page.check_product_in_deal(0)
-        assert str(self.deal_page.product_id) in product
-        time.sleep(3)
+        product = self.deal_page.check_product_in_deal(self.deal_category, 0)
+        assert str(self.deal_data.product_id) in product

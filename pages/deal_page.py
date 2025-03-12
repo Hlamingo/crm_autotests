@@ -78,10 +78,10 @@ class DealPage(BasePage):
         self.find_element(self.locators.Buttons.current_date(num)).click()
         return close_date.get_attribute("value")
         
-    def open_products_block(self):
+    def open_products_block(self, category):
         """ Открывает товарную часть сделки и возвращает результат 
         открытия товарной части"""
-        self.find_element(self.locators.Buttons.PRODUCTS_BUTTON).click()
+        self.find_element(self.locators.Buttons.products_button(category)).click()
         return self.find_element(self.locators.Result.PRODUCT_BLOCK)
     
     def click_to_select_a_product_button(self):
@@ -117,9 +117,9 @@ class DealPage(BasePage):
         url = self.driver.current_url
         return self.url_changes(url, 180)
         
-    def check_product_in_deal(self, row_id):
+    def check_product_in_deal(self, category, row_id):
         """ Возвращает товар из товарной части сделки """
-        self.open_products_block()
+        self.open_products_block(category)
         return self.find_element(
             self.locators.Result.product_title(row_id)
             ).get_attribute("value")

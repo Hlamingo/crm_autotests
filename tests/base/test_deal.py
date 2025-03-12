@@ -100,7 +100,7 @@ class TestDeal:
     @allure.story("Переход в товарную часть")
     def test_open_products_block(self):
         """ Проверка перехода в товарную часть """
-        assert self.deal_page.open_products_block()
+        assert self.deal_page.open_products_block(self.deal_category)
     
     @pytest.mark.order(10)
     @allure.story("Нажатие на кнопку 'Выбрать товар'")
