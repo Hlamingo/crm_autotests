@@ -9,11 +9,9 @@ class DealButiquesPage(DealPage):
         super().__init__(driver, base_url)
         self.locators = DealButiquesLocators
         self.base_url = f"{base_url}/crm/deal/"
-        self.category_id = 4
         self.store_address_locator = self.locators.Fields.STORE_ADDRESS
-        self.store_address_name = "Улица Тестовая, д.100"
         
-    def enter_store_address(self):
+    def enter_store_address(self, store_address_name):
         """ Выбирает адрес самовывоза в сделке и возвращает значение из 
         поля"""
         store_address = self.find_element(self.locators.Fields.STORE_ADDRESS_FIELD)
@@ -21,7 +19,7 @@ class DealButiquesPage(DealPage):
         time.sleep(1)
         store_address.click()
         store_address_search_field = self.find_element(self.locators.Fields.STORE_ADDRESS_SEARCH_FIELD)
-        store_address_search_field.send_keys(self.store_address_name)
+        store_address_search_field.send_keys(store_address_name)
         select_store_address = self.find_element(self.store_address_locator)
         self.scroll_into_view(select_store_address)
         time.sleep(1)
