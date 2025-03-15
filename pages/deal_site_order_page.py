@@ -2,13 +2,11 @@ from pages.deal_boutiques_page import DealButiquesPage
 from api.crm_api_client import ApiClient
 
 
-class SiteOrderPage(DealButiquesPage):
+class SiteDealCreate():
     """ Сделка 'Забрать с сайта' """
     
-    def __init__ (self, driver, base_url):
-        super().__init__(driver, base_url)
-        self.base_url = base_url
-        self.api = ApiClient(base_url)
+    def __init__ (self, api_client):
+        self.api = api_client
         self.webhook = self.api.site_deal_create()
         
     def check_method_status(self):
