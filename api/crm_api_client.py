@@ -9,10 +9,8 @@ class ApiClient:
         user_id = os.getenv("USER_ID")
         token = os.getenv("TOKEN")
         self.base_url = f"{base_url}/rest/{user_id }/{token}"
-        
-    def site_deal_create(self):
-        """ REST-метод site.deal.create """
-        return f"{self.base_url}/site.deal.create"
+        self.site_deal_create = f"{self.base_url}/site.deal.create" # вубхук создания сделки
+        self.crm_deal_get  = f"{self.base_url}/crm.deal.get.json" # вебхук получения данных по сделке
     
     def get(self, url):
         """ Отправляет GET-запрос """

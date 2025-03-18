@@ -6,29 +6,34 @@ import allure
 @allure.feature("Создание сделки 'Заказ с сайта'")
 class TestSiteOrder():
     """ Проверка создания сделки 'Заказ с сайта' """
+    response = None
     
     @pytest.fixture(autouse = True)
     def setup(self, api_client):
         self.site_order = SiteDealCreate(api_client)
-    
-    @allure.feature('Проверка API')
-    @allure.story('Проверка доступности REST метода')
-    @pytest.mark.order(1)
+        
+    @allure.title(" Проверка доступности REST метода ")
     def test_check_method_status(self):
-        """ Проверка статуса REST метода """
-        with allure.step("Статуса ответа"):
+        with allure.step("Проверка статуса ответа"):
             assert self.site_order.check_method_status() == 200
     
-    @pytest.mark.order(2)
+    @allure.title(" Проверка отправки пакета POST-запросом ")
     def test_make_site_order(self):
-        """ Проверка отправки пакета POST-запросом """
         path = get_file_path(
             'data/site_order/pickup_today_y_all_items_available.json'
             )
         data = read_json(path)
-        status, response = self.site_order.make_site_order(data)
-        with allure.step("Статуса ответа"):
+        status, TestSiteOrder.response = self.site_order.make_site_order(data)
+        with allure.step("Проверка статуса ответа"):
             assert status == 200
-        with allure.step("Наличие ID сделки в ответе"):
-            assert "error" not in response
-            assert response["result"]["ID"] is not None
+        with allure.step("Проверка наличия ID сделки в ответе"):
+            assert TestSiteOrder.response["result"]["ID"] is not None
+    
+    @allure.title(" Проверка создания и стадии сделки ")
+    def test_get_deal_details(self):
+        deal_id = TestSiteOrder.response["result"]["ID"]
+        status, deal_details = self.site_order.get_deal_details(deal_id)
+        with allure.step("Проверка статуса ответа"):
+            assert status == 200
+        with allure.step("Проверка стадии сделки"):
+            assert deal_details["result"]["STAGE_ID"] == "C4:EXECUTING"
