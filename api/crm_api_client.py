@@ -2,6 +2,13 @@ import os
 from dotenv import load_dotenv
 import requests
 
+class APIMethods:
+    """ Класс с методами Битрикс 24 """
+    def __init__(self):
+        self.site_deal_create = "/site.deal.create" # метод создания сделки
+        self.crm_deal_get = "/crm.deal.get.json" # метод получения данных по сделке
+        self.user_get = "user.get.json" # метод получения данных по пользователю
+
 class ApiClient:
     """ Работа с REST-Методами CRM """
     def __init__(self, base_url):
@@ -9,17 +16,12 @@ class ApiClient:
         user_id = os.getenv("USER_ID")
         token = os.getenv("TOKEN")
         self.base_url = f"{base_url}/rest/{user_id }/{token}"
-        self.site_deal_create = f"{self.base_url}/site.deal.create" # вубхук создания сделки
-        self.crm_deal_get  = f"{self.base_url}/crm.deal.get.json" # вебхук получения данных по сделке
+        self.response = None
     
-    def get(self, url):
-        """ Отправляет GET-запрос """
-        return requests.get(url)
-    
-    def post(self, url, data=None):
-        """ Отправляет POS-запрос """
-        if data:
-            return requests.post(url, json=data)
-        else:
-            return requests.post(url)
-    
+    def request(self, method, endpoint, data=None):
+        """ Выполняет HTTP-запрос к указанному endpoint """
+        url = f"{self.base_url}{endpoint}"
+        if method == "GET":
+            return requests.get(url)
+        elif method == "POST":
+            return requests.post(url, json=data)   

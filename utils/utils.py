@@ -10,6 +10,7 @@ def read_json(file_path):
         return json.load(data)
 
 def get_file_path(relative_path):
+    """ Вовзращает абсолютный путь к файлу """
     load_dotenv()
     base_dir = os.getenv('BASE_DIR', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_dir, relative_path)

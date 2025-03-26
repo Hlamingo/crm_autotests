@@ -4,7 +4,8 @@ from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from utils.config import get_url
-from pages.authorization_page import AuthPage
+from pages.auth_page.authorization_page import AuthPage
+from pages.deals import DealPage, CreateDealPage, CreateDealBoutiquesPage
 from api.crm_api_client import ApiClient
 
 @pytest.fixture(scope = 'session')
@@ -14,7 +15,7 @@ def browser():
     Gecko/20100101 Firefox/128.0'
     options = Options()
     # ~ options.add_argument("--headless")
-    # ~ options.add_argument("--no-sandbox")
+    options.add_argument("--no-sandbox")
     options.set_preference("general.useragent.override", user_agent)
     service = Service(GeckoDriverManager().install())
     driver = webdriver.Firefox(service = service, options = options)
@@ -26,23 +27,35 @@ def pytest_addoption(parser):
     parser.addoption("--env", action="store", default="dev", help="Environment to run tests against")
     parser.addoption("--url", action="store", help="Specific URL number to run tests against in dev environment")
 
+def get_base_url(request):
+    """Вспомогательная функция для получения базового URL."""
+    env = request.config.getoption("--env")
+    specific_url = request.config.getoption("--url")
+    return get_url(env, specific_url)
+
 @pytest.fixture
 def auth_page(browser, request):
     """ Фикстура для страницы авторизации """
-    env = request.config.getoption("--env")
-    specific_url = request.config.getoption("--url")
-    base_url = get_url(env, specific_url)
+    base_url = get_base_url(request)
     return AuthPage(browser, base_url)
-
-@pytest.fixture
-def base_url(auth_page):
-    """Фикстура для получения базового URL из auth_page."""
-    return auth_page.base_url
 
 @pytest.fixture
 def api_client(request):
     """ Фикстура для API Битрик24 """
-    env = request.config.getoption("--env")
-    specific_url = request.config.getoption("--url")
-    base_url = get_url(env, specific_url)
+    base_url = get_base_url(request)
     return ApiClient(base_url)
+
+@pytest.fixture
+def deal(browser, request):
+    """ Фикстура для API Битрик24 """
+    base_url = get_base_url(request)
+    
+    deal_page = DealPage(browser, base_url)
+    create_deal = CreateDealPage(browser, base_url)
+    create_deal_boutiques = CreateDealBoutiquesPage(browser, base_url)
+    
+    return {
+        "deal_page":deal_page, 
+        "create_deal":create_deal, 
+        "create_deal_boutiques":create_deal_boutiques
+        }

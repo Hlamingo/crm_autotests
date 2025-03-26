@@ -17,6 +17,8 @@ class DealsLocators:
         PRODUCT_SEARCH = (By.ID, "product_search_text")
         # Поле 'ID' в сделке
         DEAL_ID = (By.CSS_SELECTOR, '[data-cid="ID"]')
+        # Поле 'Стадия сделки'
+        STAGE_ID = (By.CSS_SELECTOR, '[data-cid="STAGE_ID"]')
         
     class Buttons:
         """ Локаторы кнопок для страницы сделки """

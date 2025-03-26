@@ -1,8 +1,7 @@
 from pages.base_page import BasePage
 from locators.deal_locators import DealsLocators
-import time
 
-class DealPage(BasePage):
+class CreateDealPage(BasePage):
     """ Сделки """
     def __init__ (self, driver, base_url):
         super().__init__(driver, base_url)

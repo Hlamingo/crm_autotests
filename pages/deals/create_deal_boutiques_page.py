@@ -1,8 +1,8 @@
-from pages.deal_page import DealPage
+from pages.deals.create_deal_page import CreateDealPage
 from locators.deal_boutiques_locators import DealButiquesLocators
 import time
 
-class DealButiquesPage(DealPage):
+class CreateDealBoutiquesPage(CreateDealPage):
     """ Сделки направленя 'Бутики' """
     
     def __init__ (self, driver, base_url):

@@ -12,17 +12,17 @@ class BasePage:
         """ Открывает страницу по URL """
         return self.driver.get(self.base_url)
         
-    def find_element(self, locator, time = 10):
+    def find_element(self, locator, time = 15):
         """ Ищет элемент на странице  """
         return WebDriverWait(self.driver, time).until(
             EC.presence_of_element_located(locator)
         )
-    def find_elements(self, locator, time=10):
+    def find_elements(self, locator, time=15):
         """ Ищет элементы на странице и возвращает список элементов """
         return WebDriverWait(self.driver, time).until(
             EC.presence_of_all_elements_located(locator)
             )
-    def visibility_of_element_located(self, locator, time = 10):
+    def visibility_of_element_located(self, locator, time = 15):
         """ Ищет элемент на странице и возвращает, когда он 
         отображается """
         return WebDriverWait(self.driver, time).until(
@@ -34,11 +34,11 @@ class BasePage:
         actions = ActionChains(self.driver)
         actions.move_to_element(element).perform()
 
-    def url_to_be(self, url, time=10):
+    def url_to_be(self, url, time=15):
         """ Ожидает изменения url страницы """
         return WebDriverWait(self.driver, time).until(EC.url_to_be(url))
     
-    def url_changes(self, url, time=10):
+    def url_changes(self, url, time=15):
         """ Отслеживает url и возвращает измененный url"""
         return WebDriverWait(self.driver, time).until(EC.url_changes(url))
     
