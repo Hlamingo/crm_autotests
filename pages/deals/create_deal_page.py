@@ -1,11 +1,11 @@
 from pages.base_page import BasePage
-from locators.deal_locators import DealsLocators
+from locators.create_deal_locators import CreateDealsLocators
 
 class CreateDealPage(BasePage):
     """ Сделки """
     def __init__ (self, driver, base_url):
         super().__init__(driver, base_url)
-        self.locators = DealsLocators
+        self.locators = CreateDealsLocators
         self.base_url = f"{base_url}/crm/deal/"
     
     def checking_deal_page_is_open(self):
@@ -20,8 +20,8 @@ class CreateDealPage(BasePage):
         return butiques_funnel[1].text
         
     def select_boutiques_funnel(self, category_name):
-        """ Наводит курсор и кликает на воронку 'Бутики' в выпадающем 
-        списке и возвращает название кнопки 'Бутики' выбора воронок"""
+        """ Наводит курсор и кликает на воронку и возвращает название 
+        вороноки"""
         butiques_funnel = self.find_elements(
             self.locators.Buttons.funnel_locator(category_name)
             )

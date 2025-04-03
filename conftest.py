@@ -4,6 +4,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from utils.config import get_url
+from utils.utils import remove
 from pages.auth_page.authorization_page import AuthPage
 from pages.deals import DealPage, CreateDealPage, CreateDealBoutiquesPage
 from api.crm_api_client import ApiClient
@@ -59,3 +60,14 @@ def deal(browser, request):
         "create_deal":create_deal, 
         "create_deal_boutiques":create_deal_boutiques
         }
+        
+@pytest.fixture(scope="session")
+def temp_file(parameters, tmp_path_factory):
+    file_name = parameters
+    a_dir = tmp_path_factory.mktemp('test_data')
+    temp_file_path = a_dir / file_name
+    
+    yield temp_file_path
+    
+    remove(temp_file_path)
+    remove(a_dir)

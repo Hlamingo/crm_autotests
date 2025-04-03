@@ -8,9 +8,9 @@ class BasePage:
         self.driver = driver
         self.base_url = base_url
         
-    def open_page(self):
+    def open_page(self, url):
         """ Открывает страницу по URL """
-        return self.driver.get(self.base_url)
+        return self.driver.get(url)
         
     def find_element(self, locator, time = 15):
         """ Ищет элемент на странице  """

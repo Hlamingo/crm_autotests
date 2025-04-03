@@ -1,10 +1,10 @@
 from selenium.webdriver.common.by import By
-from locators.deal_locators import DealsLocators
+from locators.deal_locators import CreateDealsLocators
 
-class DealButiquesLocators (DealsLocators):
+class CreateDealButiquesLocators (CreateDealsLocators):
     """ Локаторы для сделки направленя 'Бутики' """
     
-    class Fields(DealsLocators.Fields):
+    class Fields(CreateDealsLocators.Fields):
         """ Локаторы полей для сделки направления 'Бутики' """
         STORE_ADDRESS = (By.CSS_SELECTOR, 'li.active-result.group-option.test_123')
         STORE_ADDRESS_FIELD = (By.CSS_SELECTOR, '.chosen-single')

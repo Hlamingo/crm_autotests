@@ -1,5 +1,5 @@
 from pages.deals.create_deal_page import CreateDealPage
-from locators.deal_boutiques_locators import DealButiquesLocators
+from locators.create_deal_boutiques_locators import CreateDealButiquesLocators
 import time
 
 class CreateDealBoutiquesPage(CreateDealPage):
@@ -7,7 +7,7 @@ class CreateDealBoutiquesPage(CreateDealPage):
     
     def __init__ (self, driver, base_url):
         super().__init__(driver, base_url)
-        self.locators = DealButiquesLocators
+        self.locators = CreateDealButiquesLocators
         self.base_url = f"{base_url}/crm/deal/"
         self.store_address_locator = self.locators.Fields.STORE_ADDRESS
         

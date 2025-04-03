@@ -33,13 +33,13 @@ class AuthPage(BasePage):
         """ Вводит логин и возвращает введенное значение"""
         login_field = self.find_element(AuthLocators.USER_LOGIN)
         login_field.send_keys(AuthData.LOGIN)
-        return login_field.get_attribute("value")
+        assert login_field.get_attribute("value") == AuthData.LOGIN
     
     def enter_password(self):
         """ Вводит пароль и возвращает введенное значение"""
         pass_field = self.find_element(AuthLocators.USER_PASSWORD)
         pass_field.send_keys(AuthData.PASSWORD)
-        return pass_field.get_attribute("value")
+        assert pass_field.get_attribute("value") == AuthData.PASSWORD
     
     def click_login_button(self):
         """ Кликает на кнопку 'Войти'"""

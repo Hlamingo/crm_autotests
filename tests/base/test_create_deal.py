@@ -30,7 +30,7 @@ class TestDeal:
     @allure.story("Открытие страницы 'Сделки'")
     def test_open_page(self):
         """Проверка открытия страницы 'Сделки'"""
-        self.deal_page.open_page()
+        self.deal_page.open_page(self.deal_page.base_url)
         deals = self.deal_page.checking_deal_page_is_open()
         assert deals.lower().strip() == "сделки"
     
@@ -127,5 +127,5 @@ class TestDeal:
     def test_check_product_in_deal(self):
         """ Проверяет содержание товара в товарной части сделки после 
         сохранения """
-        product = self.deal_page.check_product_in_deal(0)
+        product = self.deal_page.check_product_in_deal(self.deal_category, 0)
         assert str(self.deal_data.product_id) in product
