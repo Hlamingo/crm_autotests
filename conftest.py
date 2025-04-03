@@ -5,8 +5,6 @@ from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from utils.config import get_url
 from utils.utils import remove_file, remove_dir
-from pages.auth_page.authorization_page import AuthPage
-# ~ from pages.deals import DealPage, CreateDealPage, CreateDealBoutiquesPage
 from api.crm_api_client import ApiClient
 
 @pytest.fixture(scope = 'session')
@@ -35,32 +33,11 @@ def base_url(request):
     specific_url = request.config.getoption("--url")
     return get_url(env, specific_url)
 
-# ~ @pytest.fixture
-# ~ def auth_page(browser, request):
-    # ~ """ Фикстура для страницы авторизации """
-    # ~ base_url = get_base_url(request)
-    # ~ return AuthPage(browser, base_url)
-
 @pytest.fixture
 def api_client(base_url):
     """ Фикстура для API Битрик24 """
     return ApiClient(base_url)
 
-# ~ @pytest.fixture
-# ~ def deal(browser, request):
-    # ~ """ Фикстура для API Битрик24 """
-    # ~ base_url = get_base_url(request)
-    
-    # ~ deal_page = DealPage(browser, base_url)
-    # ~ create_deal = CreateDealPage(browser, base_url)
-    # ~ create_deal_boutiques = CreateDealBoutiquesPage(browser, base_url)
-    
-    # ~ return {
-        # ~ "deal_page":deal_page, 
-        # ~ "create_deal":create_deal, 
-        # ~ "create_deal_boutiques":create_deal_boutiques
-        # ~ }
-        
 @pytest.fixture(scope="session")
 def temp_file(parameters, tmp_path_factory):
     file_name = parameters

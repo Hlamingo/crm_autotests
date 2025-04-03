@@ -3,6 +3,7 @@ from api.crm_api_client import APIMethods
 from utils.utils import read_file, write_file
 import pytest
 import allure
+import time
 
 deal_properties = {
     'pickup_today': "40",
@@ -76,3 +77,28 @@ class TestSiteOrder(DealBaseTest):
         with allure.step(f"Проверка свойства {expected_value}"):
             assert data["result"][property_name] == expected
     
+    @allure.title("Открывает страницу сделки в CRM")
+    def test_open_deal_page(self, temp_file):
+        data = read_file(temp_file)
+        deal_id = data["result"]["ID"]
+        url = f"{self.deal_details_page.base_url}/crm/deal/details/{deal_id}/"
+        self.deal_details_page.open_page(url)
+        time.sleep(10)
+        self.deal_details_page.switch_to_frame(0)
+        
+        deal_id_value = self.deal_details_page.deal_id_field()
+        with allure.step("Проверка результата загрузки страницы сделки"):
+            assert deal_id_value.text == deal_id
+        
+        deal_stage = self.deal_details_page.deal_stage()
+        with allure.step("Проверка стадии сделки"):
+            assert deal_stage.text == "В точку выдачи"
+        
+        client = self.deal_details_page.client_block()
+        company_id = client[0].get_attribute("href").split("/")[-2]
+        with allure.step("Проверка компании в сделке"):
+            assert company_id == deal_properties["company_id"]
+        
+        contact_id = client[1].get_attribute("href").split("/")[-2]
+        with allure.step("Проверка контакта в сделке"):
+            assert contact_id == deal_properties["contact_id"]
