@@ -30,7 +30,7 @@ def remove_file(file_path):
 def remove_dir(file_path):
     """ Удаляет файл директорию """
     if os.path.isdir(file_path):
-            shutil.rmtree(file_path)
+            os.rmdir(file_path)
 
 def get_file_path(relative_path):
     """ Вовзращает абсолютный путь к файлу """

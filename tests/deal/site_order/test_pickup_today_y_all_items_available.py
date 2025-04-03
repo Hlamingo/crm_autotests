@@ -60,7 +60,6 @@ class TestSiteOrder:
             assert response.json()["result"]["ID"]
         
         write_file(temp_file, response.json())
-        print(read_file(temp_file))
     
     @allure.title("Проверка свойств сделки по REST-методу 'crm.deal.get'")
     def test_deal_create_result(self, temp_file):

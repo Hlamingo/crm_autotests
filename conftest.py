@@ -4,7 +4,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from utils.config import get_url
-from utils.utils import remove
+from utils.utils import remove_file, remove_dir
 from pages.auth_page.authorization_page import AuthPage
 from pages.deals import DealPage, CreateDealPage, CreateDealBoutiquesPage
 from api.crm_api_client import ApiClient
@@ -69,5 +69,5 @@ def temp_file(parameters, tmp_path_factory):
     
     yield temp_file_path
     
-    remove(temp_file_path)
-    remove(a_dir)
+    remove_file(temp_file_path)
+    remove_dir(a_dir)
