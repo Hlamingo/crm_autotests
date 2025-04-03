@@ -1,7 +1,7 @@
 from pages.base_page import BasePage
 from locators.deal_locators import DealsLocators
 
-class DealPage(BasePage):
+class DealDetailsPage(BasePage):
     """ Сделка """
     def __init__(self, driver, base_url):
         super().__init__(driver, base_url)

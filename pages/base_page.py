@@ -1,6 +1,7 @@
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
+import allure
 
 class BasePage:
     
@@ -9,8 +10,8 @@ class BasePage:
         self.base_url = base_url
         
     def open_page(self, url):
-        """ Открывает страницу по URL """
-        return self.driver.get(url)
+        with allure.step(f"Открывает страницу {url}"):
+            return self.driver.get(url)
         
     def find_element(self, locator, time = 15):
         """ Ищет элемент на странице  """

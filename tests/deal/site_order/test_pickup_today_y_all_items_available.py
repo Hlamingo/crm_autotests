@@ -64,7 +64,6 @@ class TestSiteOrder:
     @allure.title("Проверка свойств сделки по REST-методу 'crm.deal.get'")
     def test_deal_create_result(self, temp_file):
         post_result = read_file(temp_file)
-        print(f"\n\n{post_result}\n\n")
         get_result = self.api.request(
             "GET", 
             f"{self.method.crm_deal_get}?id={post_result['result']['ID']}"
@@ -81,7 +80,6 @@ class TestSiteOrder:
     @pytest.mark.parametrize("property_name, expected_value", properties_to_check)
     def test_check_deal_property(self, property_name, expected_value, temp_file):
         data = read_file(temp_file)
-        print(data)
         with allure.step(f"Проверка свойства {expected_value}"):
             expected = getattr(self.deal_properties, expected_value)
             assert data["result"][property_name] == expected
@@ -89,7 +87,6 @@ class TestSiteOrder:
     @allure.title("Открывает страницу сделки в CRM")
     def test_open_deal_page(self, temp_file):
         data = read_file(temp_file)
-        print(f"\n\n{data}\n\n")
         deal_id = data["result"]["ID"]
         self.deal.base_url = f"{self.deal.base_url}/crm/deal/details/{deal_id}/"
         self.deal.open_page(self.deal.base_url)

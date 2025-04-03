@@ -16,6 +16,7 @@ class ApiClient:
         user_id = os.getenv("USER_ID")
         token = os.getenv("TOKEN")
         self.base_url = f"{base_url}/rest/{user_id }/{token}"
+        self.method = APIMethods()
     
     def request(self, method, endpoint, data=None):
         """ Выполняет HTTP-запрос к указанному endpoint """
