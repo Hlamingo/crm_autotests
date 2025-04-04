@@ -20,9 +20,22 @@ class DealProductPage(BasePage):
     def get_products(self):
         with allure.step("Получает товары из товарной части"):
             elements = self.find_elements(self.locators.Fields.PRDUCTS)
-            products = []
+            products = 
             for index, _ in enumerate(elements):
+                self.product_properties
                 product = self.find_element(self.locators.Result.product_title(index))
                 products.append(product)
             
             return products
+            
+    def product_properties(self, elements, option, row_id):
+        """ Возвращает данные из полей товарной позиции """
+        values = []
+        for index, _ in enumerate(elements):
+            value = self.find_element(self.locators.Result.product_title(option, index))
+            value = {
+                f"{option}": value.get_attribute("value")
+            }
+            values.append(value)
+        
+        return values

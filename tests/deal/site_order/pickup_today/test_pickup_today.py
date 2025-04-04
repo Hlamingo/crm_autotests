@@ -107,15 +107,15 @@ class TestSiteOrder(DealBaseTest):
     
     @allure.title("Открывает товарную часть")
     def test_deal_product(self, temp_file):
+        
         assert self.deal_product_page.open_products_block(self.deal_category)
-        # ~ time.sleep(10)
+        
         products = self.deal_product_page.get_products()
         crm_product_names = [product.get_attribute("value") for product in products]
-        print(crm_product_names)
+        
         data = read_file(f'data/site_order/pickup_today/{temp_file.name}')
         
         product_codes = data["PRODUCT_CODES"]
-        print(product_codes)
     
         for code in product_codes:
             assert any(code in product_name for product_name in crm_product_names)
