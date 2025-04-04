@@ -47,6 +47,11 @@ class BasePage:
         """ Переключается на фрейм """
         self.driver.switch_to.frame(frame_name)
         
+    def switch_to_default_content(self):
+        """ Переключается на дефолтный контент """
+        self.driver.switch_to.default_content()
+        
+        
     def scroll_into_view(self, element):
         """ Прокручивает страницу до элемента """
         return self.driver.execute_script(

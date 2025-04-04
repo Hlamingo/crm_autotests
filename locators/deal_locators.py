@@ -12,3 +12,7 @@ class DealsLocators(CreateDealsLocators):
         # Значения из полей 'Компания' и 'Контакт' из блока 'Клиент'
         CLIENT_BLOCK = (By.CSS_SELECTOR, 'a.crm-entity-widget-client-box-name')
         
+    class Buttons:
+        """ Локаторы кнопок для страницы создания сделки """
+        RESERVE_INTERFACE_BUTTON = (By.ID, "reserve_interface_button")
+        

@@ -1,5 +1,6 @@
 from pages.deals import DealBaseTest
 from api.crm_api_client import APIMethods
+from data.deal_category import DEAL_CATEGORY
 from utils.utils import read_file, write_file
 import pytest
 import allure
@@ -33,6 +34,8 @@ def parameters(request):
 
 @allure.feature("Создание сделки 'Заказ с сайта'")
 class TestSiteOrder(DealBaseTest):
+    
+    deal_category = DEAL_CATEGORY["Бутики"]
     
     @allure.title("Отправки пакета POST-запросом")
     def test_check_method_status(self, temp_file, api_client):
@@ -81,9 +84,8 @@ class TestSiteOrder(DealBaseTest):
     def test_open_deal_page(self, temp_file):
         data = read_file(temp_file)
         deal_id = data["result"]["ID"]
-        url = f"{self.deal_details_page.base_url}/crm/deal/details/{deal_id}/"
+        url = f"{self.deal_details_page.details_url}/{deal_id}/"
         self.deal_details_page.open_page(url)
-        time.sleep(10)
         self.deal_details_page.switch_to_frame(0)
         
         deal_id_value = self.deal_details_page.deal_id_field()
@@ -102,3 +104,31 @@ class TestSiteOrder(DealBaseTest):
         contact_id = client[1].get_attribute("href").split("/")[-2]
         with allure.step("Проверка контакта в сделке"):
             assert contact_id == deal_properties["contact_id"]
+    
+    @allure.title("Открывает товарную часть")
+    def test_deal_product(self, temp_file):
+        assert self.deal_product_page.open_products_block(self.deal_category)
+        # ~ time.sleep(10)
+        products = self.deal_product_page.get_products()
+        crm_product_names = [product.get_attribute("value") for product in products]
+        print(crm_product_names)
+        data = read_file(f'data/site_order/pickup_today/{temp_file.name}')
+        
+        product_codes = data["PRODUCT_CODES"]
+        print(product_codes)
+    
+        for code in product_codes:
+            assert any(code in product_name for product_name in crm_product_names)
+        
+        time.sleep(5)
+            
+    # ~ @allure.title("Проверка интерфейса резервирования")
+    # ~ def test_reserve_interface_page(self, temp_file):
+        # ~ data = read_file(temp_file)
+        # ~ deal_id = data["result"]["ID"]
+        
+        # ~ with allure.step("Открывает интерфейс резервирования"):
+            # ~ assert self.deal_details_page.click_reserve_interface_button()\
+             # ~ == f"{self.reserve_interface_page.ri_url}{deal_id}"
+            # ~ time.sleep(2)
+    

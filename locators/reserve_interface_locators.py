@@ -1,0 +1,1 @@
+from locators.deal_locators import DealsLocators
