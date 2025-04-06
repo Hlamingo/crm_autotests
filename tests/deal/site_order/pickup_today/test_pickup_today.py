@@ -111,14 +111,17 @@ class TestSiteOrder(DealBaseTest):
         assert self.deal_product_page.open_products_block(self.deal_category)
         
         products = self.deal_product_page.get_products()
-        crm_product_names = [product.get_attribute("value") for product in products]
+        product_names_ar = [product['title'] for product in products]
+        product_qqt = [product['quantity'] for product in products]
         
         data = read_file(f'data/site_order/pickup_today/{temp_file.name}')
         
-        product_codes = data["PRODUCT_CODES"]
-    
-        for code in product_codes:
-            assert any(code in product_name for product_name in crm_product_names)
+        product_codes_er= data["PRODUCT_CODES"]
+        print(product_codes_er)
+        with allure.step("Проверяет соответствие товарной части"):
+            for code_er in product_codes_er:
+                assert any(code_er in product_name_er for product_name_er in product_names_ar)
+            product_qqt
         
         time.sleep(5)
             

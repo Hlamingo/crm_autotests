@@ -47,9 +47,9 @@ class DealProductLocators(CreateDealsLocators):
         @staticmethod
         def product(option, row_id):
             """ Возвращает локатор поля 'Наименование' товарной позиции """
-            if option.lower() = "title":
+            if option.lower() == "title":
                 return (By.ID, f'deal_product_editor_product_row_{row_id}_PRODUCT_NAME')
-            elif option.lower() = "quantity":
+            elif option.lower() == "quantity":
                 return (By.ID, f'deal_product_editor_product_row_{row_id}_QUANTITY')
         
         @staticmethod
