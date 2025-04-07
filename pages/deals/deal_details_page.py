@@ -12,6 +12,10 @@ class DealDetailsPage(BasePage):
         self.details_url = f"{self.base_url}/crm/deal/details"
         self.locators = DealsLocators
         
+    def click_common_button(self, category_id):
+        """ Кликает на раздел 'Общее' """
+        self.find_element(self.locators.Buttons.common_button(category_id)).click()
+        
     def deal_id_field(self):
         """ Находит поле 'ID' в сделке,и возвращает значение """
         return self.find_element(self.locators.Fields.DEAL_ID)

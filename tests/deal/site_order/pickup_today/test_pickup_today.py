@@ -1,6 +1,7 @@
 from pages.deals import DealBaseTest
 from api.crm_api_client import APIMethods
 from data.deal_category import DEAL_CATEGORY
+from utils.site_order_data import SiteOrderData
 from utils.utils import read_file, write_file
 import pytest
 import allure
@@ -36,6 +37,13 @@ def parameters(request):
 class TestSiteOrder(DealBaseTest):
     
     deal_category = DEAL_CATEGORY["Бутики"]
+    source_data = None
+    
+    @pytest.fixture(autouse=True)
+    def load_data(self, parameters):
+        """ Вспомогательная фикстура: получение данных из тестового пакета 
+        """
+        self.source_data = SiteOrderData(f'data/site_order/pickup_today/{parameters}')
     
     @allure.title("Отправки пакета POST-запросом")
     def test_check_method_status(self, temp_file, api_client):
@@ -44,11 +52,11 @@ class TestSiteOrder(DealBaseTest):
                 "GET", api_client.method.site_deal_create
             )
             assert response.status_code == 200
-
-        data = read_file(f'data/site_order/pickup_today/{temp_file.name}')
+            
         with allure.step("Отправка пакета POST-запросом"):
             response = api_client.request(
-                "POST", api_client.method.site_deal_create, data
+                "POST", api_client.method.site_deal_create, 
+                self.source_data.data
             )
         with allure.step("Проверка статуса ответа"):
             assert response.status_code == 200
@@ -92,10 +100,6 @@ class TestSiteOrder(DealBaseTest):
         with allure.step("Проверка результата загрузки страницы сделки"):
             assert deal_id_value.text == deal_id
         
-        deal_stage = self.deal_details_page.deal_stage()
-        with allure.step("Проверка стадии сделки"):
-            assert deal_stage.text == "В точку выдачи"
-        
         client = self.deal_details_page.client_block()
         company_id = client[0].get_attribute("href").split("/")[-2]
         with allure.step("Проверка компании в сделке"):
@@ -110,28 +114,44 @@ class TestSiteOrder(DealBaseTest):
         
         assert self.deal_product_page.open_products_block(self.deal_category)
         
+        self.deal_product_page.click_checkbox_show_availability()
         products = self.deal_product_page.get_products()
+        
         product_names_ar = [product['title'] for product in products]
-        product_qqt = [product['quantity'] for product in products]
+        product_qqt_ar = [product['quantity'] for product in products]
         
-        data = read_file(f'data/site_order/pickup_today/{temp_file.name}')
-        
-        product_codes_er= data["PRODUCT_CODES"]
-        print(product_codes_er)
         with allure.step("Проверяет соответствие товарной части"):
-            for code_er in product_codes_er:
-                assert any(code_er in product_name_er for product_name_er in product_names_ar)
-            product_qqt
-        
-        time.sleep(5)
+            for product in self.source_data.products:
+                assert any(product["CODE"] in product_name_er for product_name_er in product_names_ar)
+                assert any(product["QUANTITY"] == product_qtt for product_qtt in product_qqt_ar)
+                
+        with allure.step("Проверка наличия товаров"):
             
-    # ~ @allure.title("Проверка интерфейса резервирования")
-    # ~ def test_reserve_interface_page(self, temp_file):
-        # ~ data = read_file(temp_file)
-        # ~ deal_id = data["result"]["ID"]
+            self.deal_details_page.click_common_button(self.deal_category)
+            deal_stage = self.deal_details_page.deal_stage()
+            
+            product_availability = all(
+                any(product[key] > 0 for key in [
+                    'store_available', 
+                    'rc_available', 
+                    'cfd_available'
+                ] if key in product)
+                for product in products
+            )
+            if product_availability:
+                with allure.step("Проверка стадии сделки"):
+                    assert deal_stage.text == "В точку выдачи"
+            else:
+                with allure.step("Проверка стадии сделки"):
+                    assert deal_stage.text == "Новый"
         
-        # ~ with allure.step("Открывает интерфейс резервирования"):
-            # ~ assert self.deal_details_page.click_reserve_interface_button()\
-             # ~ == f"{self.reserve_interface_page.ri_url}{deal_id}"
-            # ~ time.sleep(2)
+    @allure.title("Проверка интерфейса резервирования")
+    def test_reserve_interface_page(self, temp_file):
+        data = read_file(temp_file)
+        deal_id = data["result"]["ID"]
+        
+        with allure.step("Открывает интерфейс резервирования"):
+            assert self.deal_details_page.click_reserve_interface_button()\
+             == f"{self.reserve_interface_page.ri_url}{deal_id}"
+            time.sleep(2)
     

@@ -16,3 +16,12 @@ class DealsLocators(CreateDealsLocators):
         """ Локаторы кнопок для страницы создания сделки """
         RESERVE_INTERFACE_BUTTON = (By.ID, "reserve_interface_button")
         
+        @staticmethod
+        def common_button(category):
+            """ Возвращает локатор кнопки  'Общее' """
+            if category["NAME"] == "Москва":
+                return (By.CSS_SELECTOR, "##crm_scope_detail_c_deal___main .main-buttons-item-text-box")
+            else:
+                return (By.CSS_SELECTOR, f"#crm_scope_detail_c_deal_{category['ID']}__main .main-buttons-item-text-box")
+            
+        

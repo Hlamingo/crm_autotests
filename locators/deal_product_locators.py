@@ -8,6 +8,8 @@ class DealProductLocators(CreateDealsLocators):
         """ Локаторы полей товарной части """
         # Локатор позволяет узанть кол-во товарных позиций (полей)
         PRDUCTS = (By.XPATH, "//*[contains(@id, '_PRODUCT_NAME_c')]")
+        # Чекбокс 'Показать остатки'
+        SHOW_AVAILABILITY = (By.ID, "crm-top-available-checkbox")
         
         @staticmethod
         def product_quantity(row_id):
@@ -31,7 +33,7 @@ class DealProductLocators(CreateDealsLocators):
                 return (By.CSS_SELECTOR, "#crm_scope_detail_c_deal__tab_products .main-buttons-item-text-box")
             else:
                 return (By.CSS_SELECTOR, f"#crm_scope_detail_c_deal_{category['ID']}__tab_products .main-buttons-item-text-box")
-                
+        
         @staticmethod
         def product_locator(product_id):
             """ Возвращает локатор товара из результата поиска """
@@ -51,6 +53,12 @@ class DealProductLocators(CreateDealsLocators):
                 return (By.ID, f'deal_product_editor_product_row_{row_id}_PRODUCT_NAME')
             elif option.lower() == "quantity":
                 return (By.ID, f'deal_product_editor_product_row_{row_id}_QUANTITY')
+            elif option.lower() == "store_available":
+                return (By.ID, f'deal_product_editor_product_row_{row_id}_AVAILABLE_ADDITIONAL')
+            elif option.lower() == "rc_available":
+                return (By.ID, f'deal_product_editor_product_row_{row_id}_PARTNER_AVAILABLE')
+            elif option.lower() == "cfd_available":
+                return (By.ID, f'deal_product_editor_product_row_{row_id}_AVAILABLE_CFD')
         
         @staticmethod
         def product_search_title(product_id):

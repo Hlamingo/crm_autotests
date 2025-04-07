@@ -25,12 +25,21 @@ class DealProductPage(BasePage):
             for index in range(len(elements)):
                 title = self.find_element(self.locators.Result.product("title", index))
                 quantity = self.find_element(self.locators.Result.product("quantity", index))
-                
-                product = {
+                store_available = self.find_element(self.locators.Result.product("store_available", index))
+                rc_available = self.find_element(self.locators.Result.product("rc_available", index))
+                cfd_available = self.visibility_of_element_located(self.locators.Result.product("cfd_available", index))
+                item = {
                     "title": title.get_attribute("value"),
-                    "quantity": quantity.get_attribute("value")
+                    "quantity": int(quantity.get_attribute("value")),
+                    "store_available": int(store_available.get_attribute("value")),
+                    "rc_available": int(rc_available.get_attribute("value")),
+                    "cfd_available": int(cfd_available.text)
                 }
-                products.append(product)
+                products.append(item)
             
             return products
-    
+    def click_checkbox_show_availability(self):
+        """ Устанавливает чекбокс 'Показать сотатки' """
+        self.find_element(self.locators.Fields.SHOW_AVAILABILITY).click()
+        
+        
