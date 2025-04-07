@@ -153,5 +153,8 @@ class TestSiteOrder(DealBaseTest):
         with allure.step("Открывает интерфейс резервирования"):
             assert self.deal_details_page.click_reserve_interface_button()\
              == f"{self.reserve_interface_page.ri_url}{deal_id}"
-            time.sleep(2)
+        
+        self.reserve_interface_page.switch_to_default_content()
+        products = self.reserve_interface_page.get_products()
+        print(products)
     

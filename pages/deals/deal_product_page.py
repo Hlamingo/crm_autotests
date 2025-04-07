@@ -39,7 +39,7 @@ class DealProductPage(BasePage):
             
             return products
     def click_checkbox_show_availability(self):
-        """ Устанавливает чекбокс 'Показать сотатки' """
-        self.find_element(self.locators.Fields.SHOW_AVAILABILITY).click()
+        with allure.step("Устанавливает чекбокс 'Показать сотатки'"):
+            self.find_element(self.locators.Fields.SHOW_AVAILABILITY).click()
         
         
