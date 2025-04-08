@@ -27,5 +27,3 @@ class DealsLocators(CreateDealsLocators):
                 return (By.CSS_SELECTOR, "##crm_scope_detail_c_deal___main .main-buttons-item-text-box")
             else:
                 return (By.CSS_SELECTOR, f"#crm_scope_detail_c_deal_{category['ID']}__main .main-buttons-item-text-box")
-            
-        

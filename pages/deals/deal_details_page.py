@@ -1,7 +1,7 @@
 from pages.base_page import BasePage
 from locators.deal_locators import DealsLocators
 from selenium.webdriver.common.by import By
-import allure
+from selenium.webdriver.common.keys import Keys
 import time
 
 class DealDetailsPage(BasePage):
@@ -13,25 +13,63 @@ class DealDetailsPage(BasePage):
         self.category_url = f"{self.base_url}/crm/deal/category"
         self.details_url = f"{self.base_url}/crm/deal/details"
         self.locators = DealsLocators
-        
-    def click_deal_title_edit(self):
+    
+    def mark_deal_title_as_test(self):
         """ Кликает на карандаш в названии сделки, редактирует название
         """
-        with allure.step(
-            "Кликает на карандаш для редактирования название сделки"
-        ):
-            self.find_element((By.ID, "pagetitle_edit")).click()
-        with allure.step("Добавляет в название текст 'ТЕСТ!!!'"):
-            title_field = self.find_element(
-                (By.CSS_SELECTOR, ".pagetitle-item.crm-pagetitle-item")
-                )
-            title_field.click()
-            title_field.send_keys("ТЕСТ!!! ")
-            self.find_element(self.locators.Buttons.SAVE_DEAL_BUTTON).click()
-            time.sleep(2)
-            title = self.find_element((By.CSS_SELECTOR, "#pagetitle.pagetitle-item"))
-            assert "ТЕСТ!!!" in title.text
-        
+        self.find_element((By.ID, "pagetitle_edit")).click()
+        title_field = self.find_element(
+            (By.CSS_SELECTOR, ".pagetitle-item.crm-pagetitle-item")
+            )
+        title_field.click()
+        title = title_field.get_attribute("value")
+        title_field.clear()
+        test_text = f"ТЕСТ!!! {title}"
+        title_field.send_keys(test_text)
+        title_field.send_keys(Keys.ENTER)
+        title = self.find_element(
+            (By.CSS_SELECTOR, "#pagetitle.pagetitle-item")
+            )
+        assert title.text in test_text
+    
+    def change_stage_deal(self, stage):
+        """ Изменяет стадию сделки в зависимости от аргумент stage"""
+        self.find_element((
+            By.XPATH, 
+            f'//div[@class="crm-entity-section-status-step-item-text" \
+            and contains(text(), "{stage}")]'
+            )).click()
+    
+    def click_finish_deal_button(self, status):
+        """ Кликает статус завершения сделки в попапе """
+        self.visibility_of_element_located(
+            (By.ID, "entity_progress_TERMINATION")
+            )
+        if status.lower() == "сделка успешна":
+            self.find_element(
+                (By.CSS_SELECTOR, 'a.webform-small-button-accept')
+            ).click()
+        elif status.lower() == "сделка проиграна":
+            self.find_element(
+                (By.CSS_SELECTOR, 'a.webform-small-button-decline')
+                ).click()
+        else:
+            raise ValueError(f"Неизвестный статус '{status}'")
+                
+    def click_failture_radio_button(self, failture_status):
+        """ Выбирает (радио-кнопку) проигрышный статус сделки """
+        self.visibility_of_element_located((
+            By.ID, "entity_progress_FAILURE"
+        ))
+        self.find_element((
+            By.XPATH, f'//input[@name="entity_progress_FAILURE" and \
+            following-sibling::label[text()="{failture_status}"]]'
+        )).click()
+        self.find_element(
+            (By.CSS_SELECTOR, '.popup-window-button-accept')
+        ).click()
+        time.sleep(2)
+            
     def click_common_button(self, category_id):
         """ Кликает на раздел 'Общее' """
         self.find_element(self.locators.Buttons.common_button(category_id)).click()
