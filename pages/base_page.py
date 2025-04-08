@@ -29,6 +29,12 @@ class BasePage:
         return WebDriverWait(self.driver, time).until(
             EC.visibility_of_element_located(locator)
             )
+    def element_to_be_clickable(self, locator, time = 15):
+        """ Ищет элемент на странице и возвращает, когда он 
+        доступен для клика """
+        return WebDriverWait(self.driver, time).until(
+            EC.element_to_be_clickable(locator)
+            )
     
     def actions_move_to_element(self, element):
         """ Перемещает курсор мыши к элементу """

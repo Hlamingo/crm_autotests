@@ -36,8 +36,7 @@ class DealDetailsPage(BasePage):
         """ Изменяет стадию сделки в зависимости от аргумент stage"""
         self.find_element((
             By.XPATH, 
-            f'//div[@class="crm-entity-section-status-step-item-text" \
-            and contains(text(), "{stage}")]'
+            f'//div[@class="crm-entity-section-status-step-item-text" and contains(text(), "{stage}")]'
             )).click()
     
     def click_finish_deal_button(self, status):
@@ -83,15 +82,21 @@ class DealDetailsPage(BasePage):
         return self.find_element(self.locators.Fields.STAGE_ID)
     
     def client_block(self):
-        """ Находит блок 'Клиент' и возвращает результат, из полей 
+        """ Находит блок 'Клиент' и возвращает результат из полей 
         'Компания' и 'Контакт'. Можно извлечь название или ссылку """
         return self.find_elements(self.locators.Fields.CLIENT_BLOCK)
+        
+    def assigned_block(self):
+        """ Находит блок 'Ответственный' и возвращает результат из полей
+        'Ответственный' и 'Наблюдатели'. Можно извлечь текст или ссылку.
+        """
+        return self.find_elements(
+            (By.CSS_SELECTOR, "a.crm-widget-employee-name")
+            )
         
     def click_reserve_interface_button(self):
         """ Кликает на кнопку 'Резервирование товаров' """
         current_url = self.driver.current_url
-        ri_button = self.find_element(self.locators.Buttons.RESERVE_INTERFACE_BUTTON)
-        self.scroll_into_view(ri_button)
-        time.sleep(1)
+        ri_button = self.element_to_be_clickable(self.locators.Buttons.RESERVE_INTERFACE_BUTTON)
         ri_button.click()
         return self.driver.current_url if self.url_changes(current_url) else current_url
