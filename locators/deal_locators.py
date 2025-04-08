@@ -11,10 +11,14 @@ class DealsLocators(CreateDealsLocators):
         STAGE_ID = (By.CSS_SELECTOR, '[data-cid="STAGE_ID"] .ui-entity-editor-content-block-text')
         # Значения из полей 'Компания' и 'Контакт' из блока 'Клиент'
         CLIENT_BLOCK = (By.CSS_SELECTOR, 'a.crm-entity-widget-client-box-name')
+        # Изменить название сделки
+        DEAL_TITLE_EDIT = (By.ID, "pagetitle_edit")
         
     class Buttons:
         """ Локаторы кнопок для страницы создания сделки """
         RESERVE_INTERFACE_BUTTON = (By.ID, "reserve_interface_button")
+        # Кнопка 'Сохранить' (сделку)
+        SAVE_DEAL_BUTTON = (By.CSS_SELECTOR,".ui-entity-section > .ui-btn-success")
         
         @staticmethod
         def common_button(category):

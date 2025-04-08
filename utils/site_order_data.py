@@ -6,7 +6,6 @@ class SiteOrderData:
     def __init__ (self, file_path):
         self.data = read_file(file_path)
         self.products = self.products_data()
-        self.coupon = self.data["COUPON"]
         self.pickup_today = self.data["PROPERTIES"]["PICKUP_TODAY"]["VALUE"]
         self.site_order_code = self.data["FIELDS"]["ID"]
         self.domain = self.data["FIELDS"]["LID"]
@@ -23,4 +22,4 @@ class SiteOrderData:
                 "STORE_ADDRESS_ID": value["PROPERTIES"]["PICKPOINT_CRM"]["VALUE"]
             }
             values.append(properties)
-        return values
+        return sorted(values, key=lambda x: x["CODE"])

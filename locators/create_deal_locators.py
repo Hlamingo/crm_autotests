@@ -22,8 +22,6 @@ class CreateDealsLocators:
         CREATE_BUTTON = (By.CSS_SELECTOR, ".ui-btn-main > .ui-btn-text")
         # Кнопка направления (воронок) сделок
         ALL_DEALS = (By.XPATH, '//*[@class="ui-btn-text" and text()="Все сделки"]')
-        # Кнопка 'Сохранить' (сделку)
-        SAVE_DEAL_BUTTON = (By.CSS_SELECTOR,".ui-entity-section > .ui-btn-success")
         
         @staticmethod
         def funnel_locator(catgory_name):

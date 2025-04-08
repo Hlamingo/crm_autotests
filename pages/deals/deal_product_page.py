@@ -11,9 +11,9 @@ class DealProductPage(BasePage):
         self.base_url = base_url
         self.locators = DealProductLocators
     
-    def open_products_block(self, category):
+    def open_products_block(self, category_id):
         with allure.step("Кликает на вкладку 'Товары'"):
-            self.find_element(self.locators.Buttons.products_button(category)).click()
+            self.find_element(self.locators.Buttons.products_button(category_id)).click()
             element = self.find_element(self.locators.Result.PRODUCT_BLOCK)
             return element.is_displayed()
     
@@ -29,15 +29,16 @@ class DealProductPage(BasePage):
                 rc_available = self.find_element(self.locators.Result.product("rc_available", index))
                 cfd_available = self.visibility_of_element_located(self.locators.Result.product("cfd_available", index))
                 item = {
-                    "title": title.get_attribute("value"),
-                    "quantity": int(quantity.get_attribute("value")),
-                    "store_available": int(store_available.get_attribute("value")),
-                    "rc_available": int(rc_available.get_attribute("value")),
-                    "cfd_available": int(cfd_available.text)
+                    "TITLE": title.get_attribute("value"),
+                    "QUANTITY": int(quantity.get_attribute("value")),
+                    "STORE_AVAILABLE": int(store_available.get_attribute("value")),
+                    "RC_AVAILABLE": int(rc_available.get_attribute("value")),
+                    "CFD_AVAILABLE": int(cfd_available.text)
                 }
                 products.append(item)
             
-            return products
+            return sorted(products, key=lambda x: x["TITLE"])
+            
     def click_checkbox_show_availability(self):
         with allure.step("Устанавливает чекбокс 'Показать сотатки'"):
             self.find_element(self.locators.Fields.SHOW_AVAILABILITY).click()

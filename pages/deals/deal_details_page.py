@@ -1,5 +1,7 @@
 from pages.base_page import BasePage
 from locators.deal_locators import DealsLocators
+from selenium.webdriver.common.by import By
+import allure
 import time
 
 class DealDetailsPage(BasePage):
@@ -11,6 +13,24 @@ class DealDetailsPage(BasePage):
         self.category_url = f"{self.base_url}/crm/deal/category"
         self.details_url = f"{self.base_url}/crm/deal/details"
         self.locators = DealsLocators
+        
+    def click_deal_title_edit(self):
+        """ Кликает на карандаш в названии сделки, редактирует название
+        """
+        with allure.step(
+            "Кликает на карандаш для редактирования название сделки"
+        ):
+            self.find_element((By.ID, "pagetitle_edit")).click()
+        with allure.step("Добавляет в название текст 'ТЕСТ!!!'"):
+            title_field = self.find_element(
+                (By.CSS_SELECTOR, ".pagetitle-item.crm-pagetitle-item")
+                )
+            title_field.click()
+            title_field.send_keys("ТЕСТ!!! ")
+            self.find_element(self.locators.Buttons.SAVE_DEAL_BUTTON).click()
+            time.sleep(2)
+            title = self.find_element((By.CSS_SELECTOR, "#pagetitle.pagetitle-item"))
+            assert "ТЕСТ!!!" in title.text
         
     def click_common_button(self, category_id):
         """ Кликает на раздел 'Общее' """
