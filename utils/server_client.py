@@ -39,5 +39,5 @@ class ServerClient:
             host=self.hostname, username=self.ssh_log, 
             private_key=self.key_path) as sftp:
             sftp.chdir(remote_file_path)
-            return sftp.put(local_file_path)
-    
+            sftp.put(local_file_path)
+            return sftp.listdir()

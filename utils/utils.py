@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -33,7 +34,11 @@ def remove_dir(file_path):
             os.rmdir(file_path)
 
 def get_file_path(relative_path):
-    """ Вовзращает абсолютный путь к файлу """
+    """ Возвращает абсолютный путь к файлу """
     load_dotenv()
-    base_dir = os.getenv('BASE_DIR', os.path.dirname(os.path.abspath(__file__)))
-    return os.path.join(base_dir, relative_path)
+    base_dir = Path(os.getenv('BASE_DIR', Path(__file__).resolve().parent))
+    return base_dir / relative_path
+
+def get_file_from_dir(file_path):
+    """ Возвращает список файлов из директории """
+    return os.listdir(file_path)
