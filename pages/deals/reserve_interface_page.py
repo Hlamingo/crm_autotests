@@ -16,13 +16,19 @@ class ReserveInterfacePage(BasePage):
     def get_products_from_ir(self):
         """ Получает товары из ИР """
         products = []
-        strings = self.find_elements(((By.CSS_SELECTOR, '.itg-pickuppoint-table-row')))
+        strings = self.find_elements(((
+            By.CSS_SELECTOR,
+            '.itg-pickuppoint-table-row'
+            )))
         
         for index, string in enumerate(strings):
             if index < len(strings)-1:
                 if index == 0:
                     
-                    product_property = strings[index].find_elements(By.CSS_SELECTOR, '.itg-pickuppoint-table-cell-center')
+                    product_property = strings[index].find_elements(
+                        By.CSS_SELECTOR,
+                        '.itg-pickuppoint-table-cell-center'
+                        )
                     item = {
                         "CODE": product_property[3].text,
                         "QUANTITY": int(product_property[7].text),
@@ -34,7 +40,10 @@ class ReserveInterfacePage(BasePage):
                     products.append(item)
                     
                 else:
-                    product_property = strings[index].find_elements(By.CSS_SELECTOR, '.itg-pickuppoint-table-cell-center')
+                    product_property = strings[index].find_elements(
+                        By.CSS_SELECTOR,
+                        '.itg-pickuppoint-table-cell-center'
+                        )
                     item = {
                         "CODE": product_property[0].text,
                         "QUANTITY": int(product_property[4].text),
