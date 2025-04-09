@@ -29,6 +29,13 @@ class BasePage:
         return WebDriverWait(self.driver, time).until(
             EC.visibility_of_element_located(locator)
             )
+            
+    def visibility_of_all_elements_located(self, locator, timeout=15):
+        """Ищет элементы на странице и возвращает, когда они отображаются."""
+        return WebDriverWait(self.driver, timeout).until(
+            EC.visibility_of_all_elements_located(locator)
+        )
+            
     def element_to_be_clickable(self, locator, time = 15):
         """ Ищет элемент на странице и возвращает, когда он 
         доступен для клика """

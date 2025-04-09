@@ -1,5 +1,5 @@
 from utils.server_client import ServerClient
-from utils.utils import get_file_from_dir, get_file_path
+from utils.utils import get_file_path
 from dotenv import load_dotenv
 from utils.config import Config
 from data.php_scripts import PHPScripts

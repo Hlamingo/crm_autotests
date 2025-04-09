@@ -34,7 +34,7 @@ class DealDetailsPage(BasePage):
     
     def change_stage_deal(self, stage):
         """ Изменяет стадию сделки в зависимости от аргумент stage"""
-        self.find_element((
+        self.element_to_be_clickable((
             By.XPATH, 
             f'//div[@class="crm-entity-section-status-step-item-text" and contains(text(), "{stage}")]'
             )).click()
@@ -45,11 +45,11 @@ class DealDetailsPage(BasePage):
             (By.ID, "entity_progress_TERMINATION")
             )
         if status.lower() == "сделка успешна":
-            self.find_element(
+            self.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'a.webform-small-button-accept')
             ).click()
         elif status.lower() == "сделка проиграна":
-            self.find_element(
+            self.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'a.webform-small-button-decline')
                 ).click()
         else:
@@ -60,18 +60,18 @@ class DealDetailsPage(BasePage):
         self.visibility_of_element_located((
             By.ID, "entity_progress_FAILURE"
         ))
-        self.find_element((
+        self.element_to_be_clickable((
             By.XPATH, f'//input[@name="entity_progress_FAILURE" and \
             following-sibling::label[text()="{failture_status}"]]'
         )).click()
-        self.find_element(
+        self.element_to_be_clickable(
             (By.CSS_SELECTOR, '.popup-window-button-accept')
         ).click()
         time.sleep(2)
             
     def click_common_button(self, category_id):
         """ Кликает на раздел 'Общее' """
-        self.find_element(self.locators.Buttons.common_button(category_id)).click()
+        self.element_to_be_clickable(self.locators.Buttons.common_button(category_id)).click()
         
     def deal_id_field(self):
         """ Находит поле 'ID' в сделке,и возвращает значение """
@@ -79,7 +79,7 @@ class DealDetailsPage(BasePage):
     
     def deal_stage(self):
         """ Находит поле 'Стадия' и возвращает значение """
-        return self.find_element(self.locators.Fields.STAGE_ID)
+        return self.visibility_of_element_located(self.locators.Fields.STAGE_ID)
     
     def client_block(self):
         """ Находит блок 'Клиент' и возвращает результат из полей 
@@ -90,13 +90,15 @@ class DealDetailsPage(BasePage):
         """ Находит блок 'Ответственный' и возвращает результат из полей
         'Ответственный' и 'Наблюдатели'. Можно извлечь текст или ссылку.
         """
-        return self.find_elements(
+        assigned = self.visibility_of_all_elements_located(
             (By.CSS_SELECTOR, "a.crm-widget-employee-name")
             )
+        return assigned
         
     def click_reserve_interface_button(self):
         """ Кликает на кнопку 'Резервирование товаров' """
         current_url = self.driver.current_url
         ri_button = self.element_to_be_clickable(self.locators.Buttons.RESERVE_INTERFACE_BUTTON)
+        self.scroll_into_view(ri_button)
         ri_button.click()
-        return self.driver.current_url if self.url_changes(current_url) else current_url
+        return self.driver.current_url if self.url_changes(current_url, 30) else current_url

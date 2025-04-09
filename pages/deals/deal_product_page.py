@@ -13,8 +13,9 @@ class DealProductPage(BasePage):
     
     def open_products_block(self, category_id):
         """ Кликает на вкладку 'Товары' """
-        self.find_element(self.locators.Buttons.products_button(category_id)).click()
-        element = self.find_element(self.locators.Result.PRODUCT_BLOCK)
+        button = self.element_to_be_clickable(self.locators.Buttons.products_button(category_id))
+        button.click()
+        element = self.visibility_of_element_located(self.locators.Result.PRODUCT_BLOCK, 20)
         return element.is_displayed()
     
     def get_products(self):

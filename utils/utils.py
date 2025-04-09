@@ -7,7 +7,7 @@ import json
 def read_file(file_path):
     """ Считывает файл и возвращает содержимое """
     if "json" in str(file_path):
-        with open(file_path) as data:
+        with open(file_path, 'r', encoding='utf-8') as data:
             return json.load(data)
     else:
         with open(file_path, 'r') as data:

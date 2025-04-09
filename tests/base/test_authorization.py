@@ -16,5 +16,5 @@ class TestAuthorization(DealBaseTest):
         self.auth_page.enter_login()
         self.auth_page.enter_password()
         self.auth_page.click_login_button()
-        self.auth_page.authorization_error()
+        assert self.auth_page.authorization_error() is False
         self.auth_page.checking_login_successful

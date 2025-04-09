@@ -49,8 +49,8 @@ class TestSiteOrder(DealBaseTest):
             assert response.status_code == 200
         with allure.step("Проверка наличия ID сделки в ответе"):
             assert response.json()["result"]["ID"]
-        
-        write_file(temp_file, response.json())
+        with allure.step(f"ID сдлетки {response.json()["result"]["ID"]} "):
+            write_file(temp_file, response.json())
     
     @allure.title("Проверка создания сделки по REST-методу 'crm.deal.get'")
     def test_deal_create_result(self, temp_file, api_client):
@@ -122,6 +122,7 @@ class TestSiteOrder(DealBaseTest):
         deal_id = data["result"]["ID"]
         url = f"{self.deal_details_page.details_url}/{deal_id}/"
         self.deal_details_page.open_page(url)
+        self.deal_details_page.open_page(url)
         self.deal_details_page.switch_to_frame(0)
         
         self.deal_details_page.mark_deal_title_as_test()
@@ -171,7 +172,7 @@ class TestSiteOrder(DealBaseTest):
         deal_stage = self.deal_details_page.deal_stage()
         # Проверяет наличие товара в бутике, филиале и ЦФО. Если товар
         # в наличии хотя бы на одном из складов - возвращает True
-        product_availability = all(
+        product_availability = any(
             any(crm_product[key] > 0 for key in [
                 'STORE_AVAILABLE', 
                 'RC_AVAILABLE', 
@@ -210,17 +211,19 @@ class TestSiteOrder(DealBaseTest):
         crm_products = read_file(new_temp_file)
         remove_file(temp_file.parent / new_temp_file)
         
-        ir_products = self.reserve_interface_page.get_products()
+        ir_products = self.reserve_interface_page.get_products_from_ir()
+        
         for product in crm_products:
             result = next((ir_product for ir_product in ir_products if ir_product['CODE'] in product['TITLE']), None)
             assert result is not None, f"Отсутствует товар '{product['TITLE']}'"
-            assert product['STORE_AVAILABLE'] == result['STORE_AVAILABLE'] 
-            assert product['RC_AVAILABLE'] == result['RC_AVAILABLE']
+            assert result['QUANTITY'] == product['QUANTITY']
+            assert result['STORE_AVAILABLE'] == product['STORE_AVAILABLE']
+            assert result['RC_AVAILABLE'] == product['RC_AVAILABLE']
             
             if product['STORE_AVAILABLE'] > 0:
-                assert product['STORE_AVAILABLE'] == result['TO_RESERVE']
+                assert product['QUANTITY'] == result['TO_RESERVE']
             elif product['RC_AVAILABLE'] > 0:
-                assert product['RC_AVAILABLE'] == result['TO_REORDER']
+                assert product['QUANTITY'] == result['TO_REORDER']
     
     @allure.title("Завершает сделку как тестовую")
     def test_close_deal_as_test(self, temp_file):
