@@ -4,12 +4,19 @@ from dotenv import load_dotenv
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import json
+from dbfread import DBF
+import pandas as pd
+
 
 def read_file(file_path):
     """ Считывает файл и возвращает содержимое """
     if "json" in str(file_path):
         with open(file_path, 'r', encoding='utf-8') as data:
             return json.load(data)
+    elif "DBF" in str(file_path):
+        return pd.DataFrame(iter(DBF(file_path)))
+    elif "csv" in str(file_path):
+        return pd.read_csv(file_path, encoding='cp1251')
     else:
         with open(file_path, 'r') as data:
             return data.read()

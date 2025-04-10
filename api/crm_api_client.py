@@ -5,9 +5,11 @@ import requests
 class APIMethods:
     """ Класс с методами Битрикс 24 """
     def __init__(self):
-        self.site_deal_create = "/site.deal.create" # метод создания сделки
-        self.crm_deal_get = "/crm.deal.get.json" # метод получения данных по сделке
-        self.user_get = "user.get.json" # метод получения данных по пользователю
+        self.site_deal_create = "/site.deal.create" # создания сделки
+        self.crm_deal_get = "/crm.deal.get.json" # получения данных по сделке
+        self.user_get = "/user.get.json" # получения данных по пользователю
+        self.crm_product_list = "/crm.product.list.json" # получение списка товаров
+        self.crm_product_get = "/crm.product.get.json" # получение свойств товара
 
 class ApiClient:
     """ Работа с REST-Методами CRM """
