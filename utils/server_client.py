@@ -3,6 +3,11 @@ import pysftp
 from dotenv import load_dotenv
 import os
 
+class PHPScripts:
+    """ Список PHP-скриптов """
+    def __init__ (self):
+        self.product_import_from_files = "local/php_interface/console product_import_from_files"
+
 class ServerClient:
     """ Класс для взаимодействия с сервером """
     def __init__ (self):
@@ -12,7 +17,7 @@ class ServerClient:
         self.hostname = "crm.taskfactory.ru"
         self.environment = None
 
-    def php_script_runner(self, php_script_path):
+    def php_script_runner(self, php_script_path, option=None):
         """ Запускает php скрипт на тестовой площадке 
         stdin: стандартный поток ввода, можно использовать если скрипт 
         ждет данные
@@ -25,6 +30,9 @@ class ServerClient:
         ssh.connect(self.hostname, username=self.ssh_log, pkey=key)
         
         command = f'php www/{self.environment}/{php_script_path}'
+        if option:
+            command = f'php www/{self.environment}/{php_script_path} {option}'
+        print(command)
         stdin, stdout, stderr = ssh.exec_command(command)
         print(stdout.read().decode())
         print(stderr.read().decode())
