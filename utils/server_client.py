@@ -10,12 +10,12 @@ class PHPScripts:
 
 class ServerClient:
     """ Класс для взаимодействия с сервером """
-    def __init__ (self):
+    def __init__ (self, environment):
         load_dotenv()
         self.key_path = os.getenv("SSH_KEY")
         self.ssh_log = os.getenv("SSH_LOGIN")
         self.hostname = "crm.taskfactory.ru"
-        self.environment = None
+        self.environment = environment
 
     def php_script_runner(self, php_script_path, option=None):
         """ Запускает php скрипт на тестовой площадке 
@@ -34,11 +34,39 @@ class ServerClient:
             command = f'php www/{self.environment}/{php_script_path} {option}'
         print(command)
         stdin, stdout, stderr = ssh.exec_command(command)
-        print(stdout.read().decode())
-        print(stderr.read().decode())
         
-        ssh.close()
+        output = []
+        error_output = []
+        
+        # Считывает вывод cmd до завершения запуска скрипта
+        while True:
+            line = stdout.readline()
+            if not line:
+                break
+            output.append(line)
+            print(line, end='')  # Вывод в консоль
     
+        # Считывает ошибки из cmd
+        while True:
+            line = stderr.readline()
+            if not line:
+                break
+            error_output.append(line)
+            print(line, end='')
+    
+        ssh.close()
+        
+        error_output = ''.join(error_output)
+        message = ''.join(output)
+        
+        # Проверяет результат завершения выполнения скрипта: 0 - успех
+        exit_status = stdout.channel.recv_exit_status()
+        
+        if exit_status != 0 or "ошибка" in error_output.lower():
+            return False, error_output or message
+        else:
+            return True, message
+            
     def ftp_file_uploader(self, local_file_path):
         """ Загружает файлы на FTP тестовой площадки """
         remote_file_path = f"/home/dev/www/{self.environment}/admins_files"

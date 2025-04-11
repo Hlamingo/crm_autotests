@@ -1,86 +1,90 @@
-from utils.server_client import ServerClient, PHPScripts
-from utils.utils import get_file_path, get_file_from_dir, read_file
-from dotenv import load_dotenv
-from utils.config import Config
+from pages.products import ProductsBaseTest, ProductProcessingPage
+from utils.utils import write_file, read_file
 import pytest
 import allure
 import time
 
-class TestPrlistProcess:
+@pytest.fixture
+def prlist_data(base_url):
+    """ Фикстура возвращает тестовые данные """
+    file_path = "data/prlist_dbf"
+    products_processing_page = ProductProcessingPage(base_url)
+    prlist = products_processing_page.get_prlist_dbf_data(file_path)
     
-    @pytest.fixture(autouse = True)
-    def setup(self, api_client):
-        self.env_number = list(Config.DEV_URLS.keys())
-        self.api_client = api_client
-        self.php_script = PHPScripts()
-        self.server_client = ServerClient()
-        self.server_client.environment = self.env_number[4]
-        self.folder_path = "data/prlist_dbf"
+    for code, parlist_data in prlist:
+        product_data = products_processing_page.get_products_data_csv_data(file_path, code)
+        return {'code': code, 'parlist_data': parlist_data, "product_data": product_data}
+
+@pytest.fixture(scope = 'class')
+def response():
+    data = {'response': None}
+    yield data
+
+class TestPrlistProcess(ProductsBaseTest):
+    
+    file_path = "data/prlist_dbf"
     
     # ~ @allure.title("Проверка загрузки файлов на FTP")
     # ~ def test_ftp_file_uploader(self):
-        # ~ """ Загружает файлы на сервер """
-        # ~ files = get_file_from_dir(self.folder_path)
-        # ~ for file_name in files:
-            # ~ with allure.step(f"Загрузка фала {file_name}"):
-                # ~ local_file_path = get_file_path(f"{self.folder_path}/{file_name}")
-                # ~ remote_path = self.server_client.ftp_file_uploader(local_file_path)
-                # ~ assert file_name in remote_path
+        # ~ self.products_processing_page.upload_file_to_ftp(self.file_path)
         
     # ~ @allure.title("Подключается к серверу и запускает скрипт")
     # ~ def test_php_script_runner(self):
-        # ~ files = get_file_from_dir(self.folder_path)
-        # ~ option = ""
-        # ~ for file_name in files:
-            # ~ file_path = f"/home/dev/www/{self.server_client.environment}/admins_files"
-            # ~ option += f" {file_path}/{file_name}"
-                
-        # ~ self.server_client.php_script_runner(
-            # ~ self.php_script.product_import_from_files, option
-            # ~ )
-            
+        # ~ self.products_processing_page.processing_prlist_dbf(self.file_path)
+        
     @allure.title("Проверка результата обработки файлов")
-    def test_check_result_prlist_processing(self):
+    def test_check_result_prlist_processing(self, api_client, response, prlist_data):
         
-        prlist_rows = read_file(f"{self.folder_path}/PRLIST.DBF")
-        sorted_prlist = prlist_rows.sort_values('CODE')
-        grouped_products = sorted_prlist.groupby('CODE')
+        with allure.step("Отправка get-запроса на crm.product.list"):
+            product_id = api_client.request(
+            "GET", f"{api_client.method.crm_product_list}?filter[XML_ID]={int(prlist_data['code'])}"
+            )
+            assert product_id.status_code == 200, f"crm.product.list не доступен {product_id.status_code}"
+            assert product_id.json()['result'][0]['XML_ID'] == prlist_data['code'].strip(), \
+            f"Ответ не соответствует запросу. Запрашиваемый XML_ID {prlist_data['code']}, \
+            получен {product_id.json()['result'][0]['XML_ID']}"
         
-        for code, group in grouped_products:
-            print(code)
-            product_data = read_file(f"{self.folder_path}/ProductsData.csv")
-            product_data = product_data[product_data['ProductCode']== int(code)]
-            
-            time.sleep(2)
-            product_id = self.api_client.request(
-            "GET", f"{self.api_client.method.crm_product_list}?filter[XML_ID]={int(code)}"
+        with allure.step(f"Отправка get-запроса на crm.product.get. ID - товара {product_id.json()['result'][0]['ID']}"):
+            properties = api_client.request(
+            "GET", f"{api_client.method.crm_product_get}?id={product_id.json()['result'][0]['ID']}"
             )
-            print (f"\n{product_id.json()}\n")
-            properties = self.api_client.request(
-            "GET", f"{self.api_client.method.crm_product_get}?id={product_id.json()['result'][0]['ID']}"
-            )
-            properties = properties.json()
-            print (f"\n{properties}\n")
-            
-            assert f"{product_data.ProductCode.iloc[0]} - {product_data.ProductName.iloc[0]}" == properties['result']['NAME']
-            assert float(product_data.UnitWeight.iloc[0].replace(',', '.')) == float(properties['result']['PROPERTY_541']['value'])
-            assert product_data.Package_QTY.iloc[0] == float(properties['result']['PROPERTY_339']['value'])
-            assert product_data.EANCode.iloc[0] == properties['result']['PROPERTY_244']['value']
-            assert product_data.ProdCategoryName.iloc[0].lower == properties['result']['PROPERTY_728']['value'].lower()
-            assert product_data.Сapacity.iloc[0] == float(properties['result']['PROPERTY_739'][0]['value'])
-            assert product_data.ProductID.iloc[0] in properties['result']['PROPERTY_304']['value']
-            assert product_data.Manufacturer.iloc[0] == properties['result']['PROPERTY_737']['value']
-            
-            for index, row in group.iterrows():
-                if row['PAYFORM_ID'] in [200501, 200084]:
-                    pass
-                elif row['PAYFORM_ID'] == 200114:
-                    assert float(properties['result']['PRICE']) == float(row['PRICE'])
-                elif row['PAYFORM_ID'] == 200500:
-                    assert float(properties['result']['PROPERTY_626']['value'].split("|")[0]) == row['PRICE']
-                elif row['PAYFORM_ID'] == 200127:
-                    assert float(properties['result']['PROPERTY_731']['value']) == float(row['PRICE'])
-                elif row['PAYFORM_ID'] == 200125:
-                    assert float(properties['result']['PROPERTY_151']['value']) == float(row['PRICE'])
-                elif row['PAYFORM_ID'] == 200502:
-                    assert float(properties['result']['PROPERTY_883']['value']) == float(row['PRICE'])
+            assert properties.status_code == 200, f"crm.product.list не доступен {properties.status_code}"
+            assert properties.json()['result']['ID'] == product_id.json()['result'][0]['ID']
+            response['response'] = properties.json()
+    
+    def test_check_product_price(self, response, prlist_data):
+        properties = response['response']
+        self.products_processing_page.check_product_price(prlist_data['parlist_data'], response['response'])
+        
+    def test_check_property_name(self, response, prlist_data):
+        properties = response['response']
+        self.products_processing_page.check_property_name(prlist_data['product_data'], properties)
+        
+    def test_check_property_weight(self, response, prlist_data):
+        properties = response['response']
+        self.products_processing_page.check_property_weight(prlist_data['product_data'], properties)
+        
+    def test_check_property_package_qtt(self, response, prlist_data):
+        properties = response['response']
+        self.products_processing_page.check_property_package_qtt(prlist_data['product_data'], properties)
+    
+    def test_check_property_ean_code(self, response, prlist_data):
+        properties = response['response']
+        self.products_processing_page.check_property_ean_code(prlist_data['product_data'], properties)
+        
+    def test_check_property_country(self, response, prlist_data):
+        properties = response['response']
+        self.products_processing_page.check_property_country(prlist_data['product_data'], properties)
+        
+    def test_check_property_capacity(self, response, prlist_data):
+        properties = response['response']
+        self.products_processing_page.check_property_capacity(prlist_data['product_data'], properties)
+        
+    def test_check_property_guid(self, response, prlist_data):
+        properties = response['response']
+        self.products_processing_page.check_property_guid(prlist_data['product_data'], properties)
+        
+    def test_check_property_manufacturer_agt(self, response, prlist_data):
+        properties = response['response']
+        self.products_processing_page.check_property_manufacturer_agt(prlist_data['product_data'], properties)
+        
