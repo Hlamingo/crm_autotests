@@ -40,18 +40,18 @@ class ProductProcessingPage:
             
         assert result, f"Ошибка при выполнении скрипта: {message}"
         
-    def get_prlist_dbf_data(self, folder_path):
-        """ Получает список товаров из файла PRLIST.DBF, группирует их 
-        по коду товара, возвращает результат"""
-        prlist_rows = read_file(f"{folder_path}/PRLIST.DBF")
-        sorted_prlist = prlist_rows.sort_values('CODE')
-        return sorted_prlist.groupby('CODE')
+    # ~ def get_prlist_dbf_data(self, folder_path):
+        # ~ """ Получает список товаров из файла PRLIST.DBF, группирует их 
+        # ~ по коду товара, возвращает результат"""
+        # ~ prlist_rows = read_file(f"{folder_path}/PRLIST.DBF")
+        # ~ sorted_prlist = prlist_rows.sort_values('CODE')
+        # ~ return sorted_prlist.groupby('CODE')
         
-    def get_products_data_csv_data(self, folder_path, code):
-        """ Получает список товаров из файла ProductsData.csv, 
-        группирует их по коду товара, возвращает результат"""
-        product_data = read_file(f"{folder_path}/ProductsData.csv")
-        return product_data[product_data['ProductCode']== int(code)]
+    # ~ def get_products_data_csv_data(self, folder_path, code):
+        # ~ """ Получает список товаров из файла ProductsData.csv, 
+        # ~ группирует их по коду товара, возвращает результат"""
+        # ~ product_data = read_file(f"{folder_path}/ProductsData.csv")
+        # ~ return product_data[product_data['ProductCode']== int(code)]
         
     def check_product_price(self, data, properties):
         """ Проверяет проставление тип цен в товаре из ответа на запрос """

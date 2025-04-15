@@ -4,21 +4,27 @@ import pytest
 import allure
 import time
 
-@pytest.fixture
-def prlist_data(base_url):
-    """ Фикстура возвращает тестовые данные """
-    file_path = "data/prlist_dbf"
-    products_processing_page = ProductProcessingPage(base_url)
-    prlist = products_processing_page.get_prlist_dbf_data(file_path)
-    
-    for code, parlist_data in prlist:
-        product_data = products_processing_page.get_products_data_csv_data(file_path, code)
-        return {'code': code, 'parlist_data': parlist_data, "product_data": product_data}
+def data():
+    """ Получает список товаров из файла PRLIST.DBF, группирует их 
+    по коду товара, возвращает результат"""
+    folder_path = "data/prlist_dbf"
+    prlist_rows = read_file(f"{folder_path}/PRLIST.DBF")
+    sorted_prlist = prlist_rows.sort_values('CODE')
+    for code, parlist_data in sorted_prlist.groupby('CODE'):
+        product_data = read_file(f"{folder_path}/ProductsData.csv")
+        product_data[product_data['ProductCode']== int(code)]
+        yield {'code': code, 'parlist_data': parlist_data, "product_data": product_data}
+
+@pytest.fixture(params=data())
+def prlist_data(request):
+    print(request.param)
+    return request.param
 
 @pytest.fixture(scope = 'class')
 def response():
     data = {'response': None}
-    yield data
+    return data
+
 
 class TestPrlistProcess(ProductsBaseTest):
     
