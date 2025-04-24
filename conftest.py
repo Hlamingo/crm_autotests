@@ -38,6 +38,11 @@ def api_client(base_url):
     """ Фикстура для API Битрик24 """
     return ApiClient(base_url)
 
+@pytest.fixture(scope = 'class')
+def response():
+    temp_data = {}
+    return temp_data
+
 @pytest.fixture(scope="session")
 def temp_file(parameters, tmp_path_factory):
     file_name = parameters
