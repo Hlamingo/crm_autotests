@@ -26,14 +26,14 @@ def pytest_addoption(parser):
     parser.addoption("--env", action="store", default="dev", help="Environment to run tests against")
     parser.addoption("--url", action="store", help="Specific URL number to run tests against in dev environment")
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def base_url(request):
     """Вспомогательная функция для получения базового URL."""
     env = request.config.getoption("--env")
     specific_url = request.config.getoption("--url")
     return get_url(env, specific_url)
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def api_client(base_url):
     """ Фикстура для API Битрик24 """
     return ApiClient(base_url)

@@ -39,26 +39,124 @@ class ProductProcessingPage:
             )
             
         assert result, f"Ошибка при выполнении скрипта: {message}"
-
+    
+    def product_list(self, api_client):
+        """ Выгружает свойства товаров по REST-методу 'catalog.product.list'"""
+        product_list = api_client.bx.get_all(
+            'catalog.product.list',
+            params = {
+            "filter": {"iblockId": 27},
+            "select": ["id", "iblockId", "price", "name", "property135",
+                "property883", "property731", "property731", "property151",
+                "property626", "property541", "property339","property244",
+                "property728","property739", "property304","property737"
+                ]}
+            )
+        
+        return product_list
+    
+    def product_price(self, api_client):
+        """ Выгружает цены товаров по REST-методу 'crm.product.list' """
+        product_price = api_client.bx.get_all(
+            'crm.product.list',
+            params={"select":["ID","PRICE"]})
+        
+        return product_price
+    
+    def create_crm_products_table(self, db_connection):
+        """ Создёт таблицу для тестовых данных """
+        cur = db_connection.cursor()
+        create_table = """ CREATE TABLE IF NOT EXISTS crm_products (
+            ID INTEGER, NAME TEXT, PRODUCT_ID TEXT, ANALOG_CODE TEXT,
+            STIE_PRICE TEXT, MOC_PRICE TEXT, MRC_PRICE TEXT, 
+            RRC_PRICE TEXT, UNIT_WEIGHT TEXT, PACKAGE_QTY TEXT,
+            EAN_CODE TEXT, PROD_CATEGORY_NAME TEXT, 
+            СAPACITY TEXT, GUID TEXT, MANUFACTURER TEXT, ASS_DISTRIB TEXT)"""
+        cur.execute(create_table)
+        db_connection.commit()
+    
+    def insert_product_list(self, product_list, db_connection):
+        """Добавляет полученные свойства по REST-методу 
+        'catalog.product.list' в БД"""
+        cur = db_connection.cursor()
+        
+        for i in range(0, len(product_list), 100):
+            batch = product_list[i:i + 100]
+            data_to_insert = [(
+                product.get('id'),
+                product.get('name'),
+                product.get('property135', {}).get('value') if product.get('property135') else None,
+                product.get('property229', {}).get('value') if product.get('property229') else None,
+                product.get('property883', {}).get('value') if product.get('property883') else None,
+                product.get('property731', {}).get('value') if product.get('property731') else None,
+                product.get('property151', {}).get('value') if product.get('property151') else None,
+                product.get('property626', {}).get('value') if product.get('property626') else None,
+                product.get('property541', {}).get('value') if product.get('property541') else None,
+                product.get('property339', {}).get('value') if product.get('property339') else None,
+                product.get('property244', {}).get('value') if product.get('property244') else None,
+                product.get('property728', {}).get('value') if product.get('property728') else None,
+                product.get('property739', [{}])[0].get('value') if product.get('property739') else None,
+                product.get('property304', {}).get('value') if product.get('property304') else None,
+                product.get('property737', {}).get('value') if product.get('property737') else None,
+                product.get('property173', {}).get('value') if product.get('property173') else None
+                )for product in batch
+            ]
+            cur.executemany("INSERT INTO crm_products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", data_to_insert)
+            
+        db_connection.commit()
+        
+    def update_product_price(self, product_price, db_connection):
+        """ "Добавляет полученные цены по REST-методу 
+        'crm.product.list' в БД """
+        
+        cur = db_connection.cursor()
+        cur.execute("PRAGMA table_info(crm_products)")
+        columns = [column[1] for column in cur.fetchall()]
+        
+        if "PRICE" not in columns:
+            cur.execute("ALTER TABLE crm_products ADD COLUMN PRICE TEXT")
+            
+        update_query = """ UPDATE crm_products SET PRICE = CASE ID {cases} END WHERE ID IN ({ids}) """
+        
+        cases = []
+        ids = []
+        
+        for product in product_price:
+            product_id = product['ID']
+            price = product['PRICE']
+            
+            if product_id is not None:
+                if price is None:
+                    cases.append(f"WHEN {product_id} THEN NULL")
+                else:
+                    cases.append(f"WHEN {product_id} THEN '{price}'")
+                ids.append(product_id)
+            ids.append(product_id)
+        
+        update_query = update_query.format(cases=' '.join(cases), ids=','.join(ids))
+        
+        cur.execute(update_query)
+        db_connection.commit()
+    
     def check_product_price(self, prlist_dbf, properties):
         """ Проверяет проставление тип цен в товаре из ответа на запрос """
         for index, row in prlist_dbf.iterrows():
             if row['PAYFORM_ID'] in [200501, 200084]:
                 pass
             elif row['PAYFORM_ID'] == 200114:
-                assert int(properties[14]) == int(row['PRICE']),\
+                assert float(properties[14]) == float(row['PRICE']),\
                 f"Ошибка в Розничной цене: Ожидаемый {row['PRICE']}, Фактический {properties[14]}"
             elif row['PAYFORM_ID'] == 200500:
-                assert int(properties[6].split("|")[0]) == int(row['PRICE']),\
+                assert float(properties[6].split("|")[0]) == float(row['PRICE']),\
                 f"Ошибка в цене РРЦ: Ожидаемый {row['PRICE']}, Фактический {properties[6].split('|')[0]}"
             elif row['PAYFORM_ID'] == 200127:
-                assert int(properties[4]) == int(row['PRICE']),\
+                assert float(properties[4]) == float(row['PRICE']),\
                 f"Ошибка в цене МОЦ: Ожидаемый {row['PRICE']}, Фактический {properties[4]}"
             elif row['PAYFORM_ID'] == 200125:
-                assert int(properties[5]) == int(row['PRICE']),\
+                assert float(properties[5]) == float(row['PRICE']),\
                 f"Ошибка в цене МРЦ: Ожидаемый {row['PRICE']}, Фактический {properties[5]}"
             elif row['PAYFORM_ID'] == 200502:
-                assert int(properties[3]) == int(row['PRICE']),\
+                assert float(properties[3]) == float(row['PRICE']),\
                 f"Ошибка в цене САЙТ: Ожидаемый {row['PRICE']}, Фактический {properties[3]}"
     
     def check_property_name(self, product, properties):
