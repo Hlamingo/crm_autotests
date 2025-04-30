@@ -46,65 +46,62 @@ class ProductProcessingPage:
             if row['PAYFORM_ID'] in [200501, 200084]:
                 pass
             elif row['PAYFORM_ID'] == 200114:
-                assert float(properties['result']['PRICE']) == float(row['PRICE']),\
-                f"Ошибка в Розничной цене: Ожидаемый {row['PRICE']}, Фактический {properties['result']['PRICE']}"
+                assert int(properties[14]) == int(row['PRICE']),\
+                f"Ошибка в Розничной цене: Ожидаемый {row['PRICE']}, Фактический {properties[14]}"
             elif row['PAYFORM_ID'] == 200500:
-                assert float(properties['result']['PROPERTY_626']['value'].split("|")[0]) == row['PRICE'],\
-                f"Ошибка в цене РРЦ: Ожидаемый {row['PRICE']}, Фактический {properties['result']['PROPERTY_626']['value']}"
+                assert int(properties[6].split("|")[0]) == int(row['PRICE']),\
+                f"Ошибка в цене РРЦ: Ожидаемый {row['PRICE']}, Фактический {properties[6].split('|')[0]}"
             elif row['PAYFORM_ID'] == 200127:
-                assert float(properties['result']['PROPERTY_731']['value']) == float(row['PRICE']),\
-                f"Ошибка в цене МОЦ: Ожидаемый {row['PRICE']}, Фактический {properties['result']['PROPERTY_731']['value']}"
+                assert int(properties[4]) == int(row['PRICE']),\
+                f"Ошибка в цене МОЦ: Ожидаемый {row['PRICE']}, Фактический {properties[4]}"
             elif row['PAYFORM_ID'] == 200125:
-                assert float(properties['result']['PROPERTY_151']['value']) == float(row['PRICE']),\
-                f"Ошибка в цене МРЦ: Ожидаемый {row['PRICE']}, Фактический {properties['result']['PROPERTY_151']['value']}"
+                assert int(properties[5]) == int(row['PRICE']),\
+                f"Ошибка в цене МРЦ: Ожидаемый {row['PRICE']}, Фактический {properties[5]}"
             elif row['PAYFORM_ID'] == 200502:
-                assert float(properties['result']['PROPERTY_883']['value']) == float(row['PRICE']),\
-                f"Ошибка в цене САЙТ: Ожидаемый {row['PRICE']}, Фактический {properties['result']['PROPERTY_883']['value']}"
+                assert int(properties[3]) == int(row['PRICE']),\
+                f"Ошибка в цене САЙТ: Ожидаемый {row['PRICE']}, Фактический {properties[3]}"
     
     def check_property_name(self, product, properties):
         """ Проверяет свойство 'Наименование' из ответа на запрос  """
         assert f"{product.ProductCode.iloc[0]} - {product.ProductName.iloc[0]}" == \
-            properties['result']['NAME'],\
-            f"Ожидаемое '{expected_name}', Фактический '{properties['result']['NAME']}'"
+            properties[1],\
+            f"Ожидаемое '{expected_name}', Фактический '{properties[1]}'"
     
     def check_property_weight(self, product, properties):
         """ Проверяет свойство 'Вес' из ответа на запрос"""
-        assert float(product.UnitWeight.iloc[0].replace(',', '.')) == \
-        float(properties['result']['PROPERTY_541']['value']),\
-        f"Ожидаемый {expected_weight}, Фактический {properties['result']['PROPERTY_541']['value']}"
+        assert product.UnitWeight.iloc[0].replace(',', '.') == properties[7],\
+        f"Ожидаемый {expected_weight}, Фактический {properties[7]}"
        
     def check_property_package_qtt(self, product, properties):
         """ Проверяет свойство 'Количество в упаковке' из ответа на запрос """
-        assert product.Package_QTY.iloc[0] == float(
-            properties['result']['PROPERTY_339']['value']
-            ),f"Ожидаемый {expected_qty}, Фактический {properties['result']['PROPERTY_339']['value']}"
+        assert product.Package_QTY.iloc[0] == properties[8],\
+        f"Ожидаемый {expected_qty}, Фактический {properties[8]}"
     
     def check_property_ean_code(self, product, properties):
         """ Проверяет свойство 'Штрих-код' из ответа на запрос """
         assert product.EANCode.iloc[0] == \
-        properties['result']['PROPERTY_244']['value'],\
-        f"Ожидаемый '{product.EANCode.iloc[0]}', Фактический '{properties['result']['PROPERTY_244']['value']}'"
+        properties[9],\
+        f"Ожидаемый '{product.EANCode.iloc[0]}', Фактический '{properties[9]}'"
         
     def check_property_country(self, product, properties):
         """ Проверяет свойство 'Страна' из ответа на запрос """
         assert product.ProdCategoryName.iloc[0].lower() == \
-        properties['result']['PROPERTY_728']['value'].lower(),\
-        f"Ожидаемый '{product.ProdCategoryName.iloc[0].lower()}', Фактический '{properties['result']['PROPERTY_728']['value'].lower()}'"
+        properties[10].lower(),\
+        f"Ожидаемый '{product.ProdCategoryName.iloc[0].lower()}', Фактический '{properties[10].lower()}'"
     
     def check_property_capacity(self, product, properties):
         """ Проверяет свойство 'Объём' из ответа на запрос """
-        assert product.Сapacity.iloc[0] == float(
-            properties['result']['PROPERTY_739'][0]['value']
-            ), f"Ожидаемый {product.Сapacity.iloc[0]}, Фактический {properties['result']['PROPERTY_739'][0]['value']}"
+        assert product.Сapacity.iloc[0] == properties[11],\
+         f"Ожидаемый {product.Сapacity.iloc[0]}, Фактический {properties[11]}"
                 
     def check_property_guid(self, product, properties):
         """ Проверяет свойство 'GUID' из ответа на запрос """
         assert product.ProductID.iloc[0] in \
-        properties['result']['PROPERTY_304']['value'],\
-        f"Ожидаемый '{product.ProductID.iloc[0]}', Фактический '{properties['result']['PROPERTY_304']['value']}'"
+        properties[12],\
+        f"Ожидаемый '{product.ProductID.iloc[0]}', Фактический '{properties[12]}'"
         
     def check_property_manufacturer_agt(self, product, properties):
         """ Проверяет свойство 'Производитель АГТ' из ответа на запрос """
         assert product.Manufacturer.iloc[0] == \
-        properties['result']['PROPERTY_737']['value'],\
-        f"Ожидаемый '{product.Manufacturer.iloc[0]}', Фактический '{properties['result']['PROPERTY_737']['value']}'"
+        properties[13],\
+        f"Ожидаемый '{product.Manufacturer.iloc[0]}', Фактический '{properties[13]}'"

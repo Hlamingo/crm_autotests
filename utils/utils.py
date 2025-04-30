@@ -16,7 +16,7 @@ def read_file(file_path):
     elif "DBF" in str(file_path):
         return pd.DataFrame(iter(DBF(file_path)))
     elif "csv" in str(file_path):
-        return pd.read_csv(file_path, encoding='cp1251', engine='python')
+        return pd.read_csv(file_path, dtype =str, encoding='cp1251', engine='python')
     else:
         with open(file_path, 'r') as data:
             return data.read()

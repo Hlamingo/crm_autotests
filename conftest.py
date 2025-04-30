@@ -40,11 +40,13 @@ def api_client(base_url):
 
 @pytest.fixture(scope = 'class')
 def response():
+    """ Фикстура хранит временные данные для использования в тестовых мтеодах """
     temp_data = {}
     return temp_data
 
 @pytest.fixture(scope="session")
 def temp_file(parameters, tmp_path_factory):
+    """ Фикстура создают временные файлы """
     file_name = parameters
     a_dir = tmp_path_factory.mktemp('test_data')
     temp_file_path = a_dir / file_name
