@@ -43,12 +43,12 @@ def db_connection():
 @pytest.fixture(scope="session")
 def product_properties(base_url, api_client, db_connection):
     """ Фикстура для работы с тестовыми данными из БД """
-    product_processing = ProductProcessingPage(base_url)
-    product_processing.create_crm_products_table(db_connection)
-    product_list = product_processing.product_list(api_client)
-    product_processing.insert_product_list(product_list, db_connection)
-    product_price = product_processing.product_price(api_client)
-    product_processing.update_product_price(product_price, db_connection)
+    # ~ product_processing = ProductProcessingPage(base_url)
+    # ~ product_processing.create_crm_products_table(db_connection)
+    # ~ product_list = product_processing.product_list(api_client)
+    # ~ product_processing.insert_product_list(product_list, db_connection)
+    # ~ product_price = product_processing.product_price(api_client)
+    # ~ product_processing.update_product_price(product_price, db_connection)
     return db_connection
 
 # ~ @allure.feature("Обработка файлов PRLIST.DBF, ProductsData.csv и ProductsMore.csv")
@@ -69,77 +69,70 @@ def product_properties(base_url, api_client, db_connection):
             # ~ pytest.skip("Функционал тестируется на production")
         # ~ self.products_processing_page.processing_prlist_dbf(self.file_path)
 
-@allure.feature("Проверка результата обработки файла PRLIST.DBF")
-@pytest.mark.order(2)
-@pytest.mark.usefixtures('product_properties')
-@pytest.mark.parametrize("product_code, prlist_data", prlist_dbf())
-class TestPrlistDBF(ProductsBaseTest):
-    
-    @allure.title("Проверка проставления цен")
-    def test_check_product_price(self, product_code, prlist_data, product_properties):
-        conn = product_properties
-        cur = conn.cursor()
-        cur.execute(f"SELECT * FROM crm_products WHERE PRODUCT_ID={product_code}")
-        db_data = cur.fetchone()
-        self.products_processing_page.check_product_price(prlist_data, db_data)
-        
-
-# ~ @allure.feature("Проверка результата обработки файла ProductsData.csv")
-# ~ @pytest.mark.order(3)
+# ~ @allure.feature("Проверка результата обработки файла PRLIST.DBF")
+# ~ @pytest.mark.order(2)
 # ~ @pytest.mark.usefixtures('product_properties')
-# ~ @pytest.mark.parametrize("code, products_data_csv", products_data_csv())
-# ~ class TestProductsDataCsv(ProductsBaseTest):
-    
-    # ~ db_data = None
-    
-    # ~ @pytest.fixture(autouse=True)
-    # ~ def get_db_data_by_product_id(self, code, products_data_csv, product_properties):
-        # ~ """ Возвращает данные по товару из БД"""
-        # ~ conn = product_properties
-        # ~ cur = conn.cursor()
-        # ~ cur.execute(f"SELECT * FROM crm_products WHERE PRODUCT_ID={code}")
-        # ~ self.db_data = cur.fetchone()
+# ~ @pytest.mark.parametrize("product_code, prlist_data", prlist_dbf())
+# ~ class TestPrlistDBF(ProductsBaseTest):
     
     # ~ @allure.title("Проверка проставления цен")
-    # ~ @pytest.mark.parametrize("product_code, prlist_data", prlist_dbf())
-    # ~ def test_check_product_price(self, product_code, prlist_data):
+    # ~ def test_check_product_price(self, product_code, prlist_data, product_properties):
         # ~ conn = product_properties
         # ~ cur = conn.cursor()
         # ~ cur.execute(f"SELECT * FROM crm_products WHERE PRODUCT_ID={product_code}")
         # ~ db_data = cur.fetchone()
+        # ~ assert db_data is not None, f"Код товара {product_code} отсутствует в CRM"
         # ~ self.products_processing_page.check_product_price(prlist_data, db_data)
         
-    # ~ @allure.title("Проверка свойства 'Наименование'")
-    # ~ def test_check_property_name(self, code, products_data_csv):
-        # ~ self.products_processing_page.check_property_name(products_data_csv, self.db_data)
-        
-    # ~ @allure.title("Проверка свойства 'Вес'")
-    # ~ def test_check_property_weight(self, code, products_data_csv):
-        # ~ self.products_processing_page.check_property_weight(products_data_csv, self.db_data)
-        
-    # ~ @allure.title("Проверка свойства 'Количество в упаковке'")
-    # ~ def test_check_property_package_qtt(self, code, products_data_csv):
-        # ~ self.products_processing_page.check_property_package_qtt(products_data_csv, self.db_data)
-        
-    # ~ @allure.title("Проверка свойства 'Штрих-код'")
-    # ~ def test_check_property_ean_code(self, code, products_data_csv):
-        # ~ self.products_processing_page.check_property_ean_code(products_data_csv, self.db_data)
-        
-    # ~ @allure.title("Проверка свойства 'Страна'")
-    # ~ def test_check_property_country(self, code, products_data_csv):
-        # ~ self.products_processing_page.check_property_country(products_data_csv, self.db_data)
-        
-    # ~ @allure.title("Проверка свойства 'Объём'")
-    # ~ def test_check_property_capacity(self, code, products_data_csv):
-        # ~ self.products_processing_page.check_property_capacity(products_data_csv, self.db_data)
+
+@allure.feature("Проверка результата обработки файла ProductsData.csv")
+@pytest.mark.order(3)
+@pytest.mark.usefixtures('product_properties')
+@pytest.mark.parametrize("code, products_data_csv", products_data_csv())
+class TestProductsDataCsv(ProductsBaseTest):
     
-    # ~ @allure.title("Проверка свойства 'GUID'")
-    # ~ def test_check_property_guid(self, code, products_data_csv):
-        # ~ self.products_processing_page.check_property_guid(products_data_csv, self.db_data)
+    db_data = None
     
-    # ~ @allure.title("Проверка свойства 'Производитель АГТ'")
-    # ~ def test_check_property_manufacturer_agt(self, code, products_data_csv):
-        # ~ self.products_processing_page.check_property_manufacturer_agt(products_data_csv, self.db_data)
+    @pytest.fixture(autouse=True)
+    def get_db_data_by_product_id(self, code, product_properties):
+        """ Возвращает данные по товару из БД"""
+        conn = product_properties
+        cur = conn.cursor()
+        cur.execute(f"SELECT * FROM crm_products WHERE PRODUCT_ID={code}")
+        self.db_data = cur.fetchone()
+        assert self.db_data is not None, f"Код товара {product_code} отсутствует в CRM"
+    
+    @allure.title("Проверка свойства 'Наименование'")
+    def test_check_property_name(self, code, products_data_csv):
+        self.products_processing_page.check_property_name(products_data_csv, self.db_data)
+        
+    @allure.title("Проверка свойства 'Вес'")
+    def test_check_property_weight(self, code, products_data_csv):
+        self.products_processing_page.check_property_weight(products_data_csv, self.db_data)
+        
+    @allure.title("Проверка свойства 'Количество в упаковке'")
+    def test_check_property_package_qtt(self, code, products_data_csv):
+        self.products_processing_page.check_property_package_qtt(products_data_csv, self.db_data)
+        
+    @allure.title("Проверка свойства 'Штрих-код'")
+    def test_check_property_ean_code(self, code, products_data_csv):
+        self.products_processing_page.check_property_ean_code(products_data_csv, self.db_data)
+        
+    @allure.title("Проверка свойства 'Страна'")
+    def test_check_property_country(self, code, products_data_csv):
+        self.products_processing_page.check_property_country(products_data_csv, self.db_data)
+        
+    @allure.title("Проверка свойства 'Объём'")
+    def test_check_property_capacity(self, code, products_data_csv):
+        self.products_processing_page.check_property_capacity(products_data_csv, self.db_data)
+    
+    @allure.title("Проверка свойства 'GUID'")
+    def test_check_property_guid(self, code, products_data_csv):
+        self.products_processing_page.check_property_guid(products_data_csv, self.db_data)
+    
+    @allure.title("Проверка свойства 'Производитель АГТ'")
+    def test_check_property_manufacturer_agt(self, code, products_data_csv):
+        self.products_processing_page.check_property_manufacturer_agt(products_data_csv, self.db_data)
 
 # ~ @allure.feature("Проверка результата обработки файла ProductsMore.csv")
 # ~ @pytest.mark.order(4)
