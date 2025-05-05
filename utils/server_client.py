@@ -2,6 +2,7 @@ import paramiko
 import pysftp
 from dotenv import load_dotenv
 import os
+import io
 
 class PHPScripts:
     """ Список PHP-скриптов """
@@ -77,3 +78,14 @@ class ServerClient:
             sftp.chdir(remote_file_path)
             sftp.put(local_file_path)
             return sftp.listdir()
+    
+    def ftp_file_reader(self, remote_file_path):
+        """ Считывает содержимое файлов на FTP """
+        with pysftp.Connection(
+            host=self.hostname, username=self.ssh_log, 
+            private_key=self.key_path) as sftp:
+                file_content = ioBytesIO()
+                sftp.getfo(remote_file_path, file_content)
+                return file_content.seek(0)
+                
+    

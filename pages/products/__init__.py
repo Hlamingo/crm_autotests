@@ -1,4 +1,4 @@
-from pages.products.products_processing_page import ProductProcessingPage
+from pages.products.product_import_from_files import ProductImportFromFiles
 from pages.products.products_base_test import ProductsBaseTest
 
-__all__ = ['ProductProcessingPage', 'ProductsBaseTest']
+__all__ = ['ProductImportFromFiles', 'ProductsBaseTest']

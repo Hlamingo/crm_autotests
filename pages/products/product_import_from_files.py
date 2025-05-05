@@ -3,7 +3,7 @@ from utils.server_client import ServerClient, PHPScripts
 from utils.config import Config
 import allure
 
-class ProductProcessingPage:
+class ProductImportFromFiles:
     """ Класс обработки товаров из файлов """
     
     def __init__ (self, base_url):
@@ -138,84 +138,3 @@ class ProductProcessingPage:
         
         cur.execute(update_query)
         db_connection.commit()
-    
-    def check_product_price(self, prlist_dbf, properties):
-        """ Проверяет проставление типа цен в товаре """
-        for index, row in prlist_dbf.iterrows():
-            if row['PAYFORM_ID'] in [200501, 200084]:
-                pass
-            elif row['PAYFORM_ID'] == 200502:
-                assert float(properties[4]) == float(row['PRICE']),\
-                f"Ошибка в цене САЙТ: Ожидаемый {row['PRICE']}, Фактический {properties[4]}"
-            elif row['PAYFORM_ID'] == 200127:
-                assert float(properties[5]) == float(row['PRICE']),\
-                f"Ошибка в цене МОЦ: Ожидаемый {row['PRICE']}, Фактический {properties[5]}"
-            elif row['PAYFORM_ID'] == 200125:
-                assert float(properties[6]) == float(row['PRICE']),\
-                f"Ошибка в цене МРЦ: Ожидаемый {row['PRICE']}, Фактический {properties[6]}"
-            elif row['PAYFORM_ID'] == 200500:
-                assert float(properties[7].split("|")[0]) == float(row['PRICE']),\
-                f"Ошибка в цене РРЦ: Ожидаемый {row['PRICE']}, Фактический {properties[7].split('|')[0]}"
-            elif row['PAYFORM_ID'] == 200114:
-                assert float(properties[16]) == float(row['PRICE']),\
-                f"Ошибка в Розничной (Базовой) цене: Ожидаемый {row['PRICE']}, Фактический {properties[16]}" 
-                
-    def check_property_name(self, product, properties):
-        """ Проверяет свойство 'Наименование' """
-        expected_name = f"{product.ProductCode.iloc[0]} - {product.ProductName.iloc[0]}"
-        assert expected_name.strip().lower() == properties[1].strip().lower(),\
-            f"Ожидаемое '{expected_name}', Фактический '{properties[1]}'"
-    
-    def check_property_weight(self, product, properties):
-        """ Проверяет свойство 'Вес'"""
-        if properties[8] == None:
-            assert expected_weight == properties[8],\
-            f"Ожидаемый {expected_weight}, Фактический {properties[8]}"
-        else:
-            expected_weight = product.UnitWeight.iloc[0].replace(',', '.')
-            assert float(expected_weight) == float(properties[8]),\
-            f"Ожидаемый {expected_weight}, Фактический {properties[8]}"
-       
-    def check_property_package_qtt(self, product, properties):
-        """ Проверяет свойство 'Количество в упаковке' """
-        expected_qty = product.Package_QTY.iloc[0]
-        assert expected_qty == properties[9],\
-        f"Ожидаемый {expected_qty}, Фактический {properties[9]}"
-    
-    def check_property_ean_code(self, product, properties):
-        """ Проверяет свойство 'Штрих-код' """
-        ean_code = product.EANCode.iloc[0]
-        if isinstance(ean_code, float) and ean_code != ean_code: # Проверяет, если ean_code имеет значение NaN
-            ean_code = '0'
-        assert ean_code == properties[10],\
-        f"Ожидаемый '{product.EANCode.iloc[0]}', Фактический '{properties[10]}'"
-        
-    def check_property_country(self, product, properties):
-        """ Проверяет свойство 'Страна' """
-        expected_country = product.ProdCategoryName.iloc[0]
-        assert properties[11] is not None, \
-        f"Ожидаемый '{expected_country.lower()}', Фактический '{properties[11]}'"
-        assert expected_country.lower() == \
-        properties[11].lower(),\
-        f"Ожидаемый '{expected_country.lower()}', Фактический '{properties[11].lower()}'"
-    
-    def check_property_capacity(self, product, properties):
-        """ Проверяет свойство 'Объём' """
-        assert properties[12] is not None, \
-        f"Ожидаемый {product.Сapacity.iloc[0]}, Фактический {properties[12]}"
-        assert float(product.Сapacity.iloc[0]) == float(properties[12]),\
-        f"Ожидаемый {product.Сapacity.iloc[0]}, Фактический {properties[12]}"
-        
-    def check_property_guid(self, product, properties):
-        """ Проверяет свойство 'GUID' """
-        assert product.ProductID.iloc[0] in \
-        properties[13],\
-        f"Ожидаемый '{product.ProductID.iloc[0]}', Фактический '{properties[13]}'"
-        
-    def check_property_manufacturer_agt(self, product, properties):
-        """ Проверяет свойство 'Производитель АГТ' """
-        expected_manufacturer = product.Manufacturer.iloc[0]
-        if isinstance(expected_manufacturer, float) and expected_manufacturer != expected_manufacturer:
-            expected_manufacturer = None
-        assert expected_manufacturer == properties[14],\
-        f"Ожидаемый '{expected_manufacturer}', Фактический '{properties[14]}'"

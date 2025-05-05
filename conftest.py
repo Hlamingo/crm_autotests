@@ -3,9 +3,11 @@ from selenium import webdriver
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
+import sqlite3
 from utils.config import get_url
 from utils.utils import remove_file, remove_dir
 from api.crm_api_client import ApiClient
+from pages.products import ProductImportFromFiles
 
 @pytest.fixture(scope = 'session')
 def browser():
@@ -55,3 +57,21 @@ def temp_file(parameters, tmp_path_factory):
     
     remove_file(temp_file_path)
     remove_dir(a_dir)
+
+@pytest.fixture(scope='session')
+def db_connection():
+    """ Фикстура для подключения к БД """
+    conn = sqlite3.connect("test_data.db")
+    yield conn
+    conn.close()
+
+@pytest.fixture(scope="session")
+def product_properties(base_url, api_client, db_connection):
+    """ Фикстура для работы с тестовыми данными из БД """
+    # ~ product_processing = ProductImportFromFiles(base_url)
+    # ~ product_processing.create_crm_products_table(db_connection)
+    # ~ product_list = product_processing.product_list(api_client)
+    # ~ product_processing.insert_product_list(product_list, db_connection)
+    # ~ product_price = product_processing.product_price(api_client)
+    # ~ product_processing.update_product_price(product_price, db_connection)
+    return db_connection
