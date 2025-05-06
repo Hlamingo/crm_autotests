@@ -1,6 +1,7 @@
 import paramiko
 import pysftp
 from dotenv import load_dotenv
+from utils.config import Config
 import os
 import io
 
@@ -11,12 +12,19 @@ class PHPScripts:
 
 class ServerClient:
     """ Класс для взаимодействия с сервером """
-    def __init__ (self, environment):
+    def __init__ (self, base_url):
         load_dotenv()
         self.key_path = os.getenv("SSH_KEY")
         self.ssh_log = os.getenv("SSH_LOGIN")
         self.hostname = "crm.taskfactory.ru"
-        self.environment = environment
+        self.base_url = base_url
+        self.environment = self.environment_url()
+        
+    def environment_url(self):
+        """ Вспомогательный метод для получения окружения """
+        return next(
+            key for key, value in Config.DEV_URLS.items() if value == self.base_url
+            )
 
     def php_script_runner(self, php_script_path, option=None):
         """ Запускает php скрипт на тестовой площадке 
@@ -81,11 +89,12 @@ class ServerClient:
     
     def ftp_file_reader(self, remote_file_path):
         """ Считывает содержимое файлов на FTP """
+        ftp_file_path = f"/home/dev/admin_files/{remote_file_path}"
+        file_content = io.BytesIO()
         with pysftp.Connection(
             host=self.hostname, username=self.ssh_log, 
             private_key=self.key_path) as sftp:
-                file_content = ioBytesIO()
-                sftp.getfo(remote_file_path, file_content)
-                return file_content.seek(0)
-                
+                sftp.getfo(ftp_file_path, file_content)
+        file_content.seek(0)
+        return file_content
     

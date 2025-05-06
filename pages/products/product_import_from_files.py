@@ -8,16 +8,9 @@ class ProductImportFromFiles:
     
     def __init__ (self, base_url):
         self.base_url = base_url
-        self.environment = self.environment_url()
-        self.server_client = ServerClient(self.environment)
+        self.server_client = ServerClient(self.base_url)
         self.php_script = PHPScripts()
         
-    def environment_url(self):
-        """ Вспомогательный метод для получения окружения """
-        return next(
-            key for key, value in Config.DEV_URLS.items() if value == self.base_url
-            )
-    
     def upload_file_to_ftp(self, folder_path):
         """ Загружает файлы на сервер """
         files = get_file_from_dir(folder_path)
@@ -31,7 +24,7 @@ class ProductImportFromFiles:
         """ Получает список файлов, добавляет его в качестве опции к 
         скрипту, запускает скрипт product_import_from_files """
         files = get_file_from_dir(folder_path)
-        option = [f"/home/dev/www/{self.environment}/admins_files/{file_name}" for file_name in files]
+        option = [f"/home/dev/www/{self.server_client.environment}/admins_files/{file_name}" for file_name in files]
         option.sort(key=lambda x: (x.endswith("PRLIST.DBF"), x))
         
         result, message = self.server_client.php_script_runner(

@@ -1,21 +1,28 @@
-from pages.products import ProductsBaseTest, ProductImportFromFiles
-import sqlite3
+from pages.products import ProductsBaseTest
+from utils.server_client import ServerClient
 from utils.utils import read_file
 import pytest
 import allure
 
-def prlist_dbf():
+def pytest_generate_tests(metafunc):
     """ Получает список товаров из файла PRLIST.DBF, группирует их 
     по коду товара, возвращает результат"""
-    folder_path = "data/prlist_dbf"
-    prlist_rows = read_file(f"{folder_path}/PRLIST.DBF")
-    sorted_prlist = prlist_rows.sort_values('CODE')
-    data = [(code, prlist_data) for code, prlist_data in sorted_prlist.groupby('CODE')]
-    
-    return data
+    if metafunc.config.getoption("env") == "dev":
+        server_client = ServerClient("https://54448.crm.taskfactory.ru")
+        content = server_client.ftp_file_reader("PRLIST.DBF")
+        prlist_rows = read_file(file_content=content)
+        print(prlist_rows)
+        sorted_prlist = prlist_rows.sort_values('CODE')
+        data = [(code, prlist_data) for code, prlist_data in sorted_prlist.groupby('CODE')]
+    else:
+        folder_path = "data/prlist_dbf"
+        prlist_rows = read_file(f"{folder_path}/PRLIST.DBF")
+        sorted_prlist = prlist_rows.sort_values('CODE')
+        data = [(code, prlist_data) for code, prlist_data in sorted_prlist.groupby('CODE')]
+        
+    metafunc.parametrize("product_code, prlist_data", data)
 
 @allure.feature("Проверка результата обработки файла PRLIST.DBF")
-@pytest.mark.parametrize("product_code, prlist_data", prlist_dbf())
 class TestPrlistDBF(ProductsBaseTest):
     
     db_data = None
@@ -23,6 +30,7 @@ class TestPrlistDBF(ProductsBaseTest):
     
     @pytest.fixture(autouse=True)
     def test_prlist_dbf_data(self, product_code, prlist_data, product_properties):
+        print(product_code)
         conn = product_properties
         cur = conn.cursor()
         cur.execute(f"SELECT * FROM crm_products WHERE PRODUCT_ID={product_code}")
