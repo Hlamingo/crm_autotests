@@ -16,15 +16,25 @@ class ServerClient:
         load_dotenv()
         self.key_path = os.getenv("SSH_KEY")
         self.ssh_log = os.getenv("SSH_LOGIN")
-        self.hostname = "crm.taskfactory.ru"
         self.base_url = base_url
+        self.hostname = self.hostname_url()
         self.environment = self.environment_url()
         
     def environment_url(self):
         """ Вспомогательный метод для получения окружения """
-        return next(
-            key for key, value in Config.DEV_URLS.items() if value == self.base_url
-            )
+        if self.base_url == Config.PROD_URL:
+            return Config.PROD_URL
+        else:
+            return next(
+                key for key, value in Config.DEV_URLS.items() if value == self.base_url
+                )
+            
+    def hostname_url(self):
+        """ Вспомогательный метод для получения url FTP-сервера """
+        if self.base_url == Config.PROD_URL:
+            pass #здесь ввести url для подключения к FTP-прода
+        else:
+            return "crm.taskfactory.ru"
 
     def php_script_runner(self, php_script_path, option=None):
         """ Запускает php скрипт на тестовой площадке 
@@ -90,11 +100,11 @@ class ServerClient:
     def ftp_file_reader(self, remote_file_path):
         """ Считывает содержимое файлов на FTP """
         ftp_file_path = f"/home/dev/admin_files/{remote_file_path}"
-        file_content = io.BytesIO()
-        with pysftp.Connection(
-            host=self.hostname, username=self.ssh_log, 
-            private_key=self.key_path) as sftp:
-                sftp.getfo(ftp_file_path, file_content)
-        file_content.seek(0)
-        return file_content
+        with pysftp.Connection(host=self.hostname, username=self.ssh_log, private_key=self.key_path) as sftp:
+            with sftp.open(ftp_file_path) as remote_file:
+                if "DBF" in ftp_file_path:
+                    return remote_file.read()
+                else:
+                    file_content = io.BytesIO(remote_file.read())
+                    return file_content
     

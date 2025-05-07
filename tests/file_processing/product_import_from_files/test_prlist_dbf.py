@@ -1,6 +1,7 @@
 from pages.products import ProductsBaseTest
 from utils.server_client import ServerClient
 from utils.utils import read_file
+import tempfile
 import pytest
 import allure
 
@@ -9,9 +10,13 @@ def pytest_generate_tests(metafunc):
     по коду товара, возвращает результат"""
     if metafunc.config.getoption("env") == "dev":
         server_client = ServerClient("https://54448.crm.taskfactory.ru")
-        content = server_client.ftp_file_reader("PRLIST.DBF")
-        prlist_rows = read_file(file_content=content)
-        print(prlist_rows)
+        prlist_dbf = server_client.ftp_file_reader("PRLIST.DBF")
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            # Записываем содержимое удаленного файла во временный файл
+            temp_file.write(prlist_dbf)
+            temp_file_path = temp_file.name
+        print(temp_file_path)
+        prlist_rows = read_file(temp_file_path)
         sorted_prlist = prlist_rows.sort_values('CODE')
         data = [(code, prlist_data) for code, prlist_data in sorted_prlist.groupby('CODE')]
     else:

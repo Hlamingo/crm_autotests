@@ -8,11 +8,8 @@ from dbfread import DBF
 import pandas as pd
 
 
-def read_file(file_path=None, file_content=None):
+def read_file(file_path):
     """ Считывает файл и возвращает содержимое """
-    if file_content is not None:
-        return pd.DataFrame(iter(DBF(file_content)))
-    
     if "json" in str(file_path):
         with open(file_path, 'r', encoding='utf-8') as data:
             return json.load(data)
