@@ -1,31 +1,6 @@
 from pages.products import ProductsBaseTest
-from utils.server_client import ServerClient
-from utils.utils import read_file
-import tempfile
 import pytest
 import allure
-
-def pytest_generate_tests(metafunc):
-    """ Получает список товаров из файла PRLIST.DBF, группирует их 
-    по коду товара, возвращает результат"""
-    if metafunc.config.getoption("env") == "dev":
-        server_client = ServerClient("https://54448.crm.taskfactory.ru")
-        prlist_dbf = server_client.ftp_file_reader("PRLIST.DBF")
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-            # Записываем содержимое удаленного файла во временный файл
-            temp_file.write(prlist_dbf)
-            temp_file_path = temp_file.name
-        print(temp_file_path)
-        prlist_rows = read_file(temp_file_path)
-        sorted_prlist = prlist_rows.sort_values('CODE')
-        data = [(code, prlist_data) for code, prlist_data in sorted_prlist.groupby('CODE')]
-    else:
-        folder_path = "data/prlist_dbf"
-        prlist_rows = read_file(f"{folder_path}/PRLIST.DBF")
-        sorted_prlist = prlist_rows.sort_values('CODE')
-        data = [(code, prlist_data) for code, prlist_data in sorted_prlist.groupby('CODE')]
-        
-    metafunc.parametrize("product_code, prlist_data", data)
 
 @allure.feature("Проверка результата обработки файла PRLIST.DBF")
 class TestPrlistDBF(ProductsBaseTest):
