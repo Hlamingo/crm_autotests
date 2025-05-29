@@ -89,13 +89,15 @@ class ServerClient:
     def ftp_file_uploader(self, local_file_path):
         """ Загружает файлы на FTP тестовой площадки """
         remote_file_path = f"/home/dev/www/{self.environment}/admins_files"
-        
-        with pysftp.Connection(
-            host=self.hostname, username=self.ssh_log, 
-            private_key=self.key_path) as sftp:
-            sftp.chdir(remote_file_path)
-            sftp.put(local_file_path)
-            return sftp.listdir()
+        try:
+            with pysftp.Connection(
+                host=self.hostname, username=self.ssh_log,
+                private_key=self.key_path) as sftp:
+                sftp.chdir(remote_file_path)
+                sftp.put(local_file_path)
+                return sftp.listdir()
+        except FileNotFoundError:
+            return False
     
     def ftp_file_reader(self, remote_file_path):
         """ Считывает содержимое файлов на FTP """

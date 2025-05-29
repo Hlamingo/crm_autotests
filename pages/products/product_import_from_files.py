@@ -15,10 +15,13 @@ class ProductImportFromFiles:
         """ Загружает файлы на сервер """
         files = get_file_from_dir(folder_path)
         for file_name in files:
-            with allure.step(f"Загрузка фала {file_name}"):
-                local_file_path = get_file_path(f"{folder_path}/{file_name}")
-                remote_path = self.server_client.ftp_file_uploader(local_file_path)
-                assert file_name in remote_path, f"Файл отсутствует {file_name} на ftp"
+            if file_name.lower().strip() in ["prlist.dbf", "productsdata.csv", "productsmore.csv"]:
+                with allure.step(f"Загрузка фала {file_name}"):
+                    local_file_path = get_file_path(f"{folder_path}/{file_name}")
+                    remote_path = self.server_client.ftp_file_uploader(local_file_path)
+                    assert remote_path, f"На FTP отсутствует директория. Проверьте наличие \
+                    /home/dev/www/{self.server_client.environment}/admins_files"
+                    assert file_name in remote_path, f"Файл отсутствует {file_name} на ftp"
     
     def processing_prlist_dbf(self, folder_path):
         """ Получает список файлов, добавляет его в качестве опции к 

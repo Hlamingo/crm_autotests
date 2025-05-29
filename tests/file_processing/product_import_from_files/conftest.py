@@ -22,31 +22,55 @@ def product_properties(base_url, api_client, db_connection):
     # ~ product_processing.update_product_price(product_price, db_connection)
     return db_connection
 
-def pytest_pycollect_makeitem(collector, name, obj):
-    env = collector.config.getoption("env")
-    if env == "dev":
-        try:
-            if obj.__name__ and obj.__name__ == "TestPrlistDBF":
-                folder_path = "data/prlist_dbf"
-                sorted_prlist = read_file(f"{folder_path}/PRLIST.DBF").sort_values('CODE')
-                data = [(code, prlist_dbf_data) for code, prlist_dbf_data in sorted_prlist.groupby('CODE')]
-                pytest.mark.parametrize("product_code, prlist_data", data)(obj)
-        except AttributeError:
-            pass
-    elif env == "prod":
-        try:
-            if obj.__name__ and obj.__name__ == "TestPrlistDBF":
-                server_client = ServerClient("https://54448.crm.taskfactory.ru")
-                prlist_dbf = server_client.ftp_file_reader("PRLIST.DBF")
-                # Записываем содержимое удаленного файла во временный файл
-                with tempfile.NamedTemporaryFile(suffix=".DBF", delete=True) as temp_file:
-                    temp_file.write(prlist_dbf)
-                    temp_file.flush()
-                    sorted_prlist = read_file(temp_file.name).sort_values('CODE')
-                    data = [(code, prlist_dbf_data) for code, prlist_dbf_data in sorted_prlist.groupby('CODE')]
-                    pytest.mark.parametrize("product_code, prlist_data", data)(obj)
-        except AttributeError:
-            pass
+def load_files(env, file_name, sort_value):
+    """Загружает данные из файла и возвращает список"""
+    if env == "dev": # Загружает данные из локального файла PRLIST.DBF
+
+        folder_path = "data/prlist_dbf"
+        sorted_file = read_file(f"{folder_path}/{file_name}").sort_values(sort_value)
+        return [(product_code, file_data) for product_code, file_data in sorted_file.groupby(sort_value)]
+
+    elif env == "prod": # Загружает файл PRLIST.DBF c FTP
+
+        server_client = ServerClient("https://54448.crm.taskfactory.ru")
+        ftp_file = server_client.ftp_file_reader(file_name)
+
+        if file_name.endswith(".csv"):
+
+            sorted_prlist = read_file(ftp_file).sort_values(sort_value)
+            return [(product_code, prlist_dbf_data) for product_code, prlist_dbf_data in
+                    sorted_prlist.groupby(sort_value)]
+        else:
+            # Записываем содержимое удаленного файла во временный файл
+            with tempfile.NamedTemporaryFile(suffix=".DBF", delete=True) as temp_file:
+                temp_file.write(ftp_file)
+                temp_file.flush()
+                sorted_prlist = read_file(temp_file.name).sort_values(sort_value)
+                return [(product_code, prlist_dbf_data) for product_code, prlist_dbf_data in
+                        sorted_prlist.groupby(sort_value)]
 
     else:
-        pytest.fail(reason="Передан неизвестный параметр: {}".format(env))
+        return False
+
+def pytest_pycollect_makeitem(collector, name, obj):
+    """ Передаёт параметры в тестовый класс в зависимости от CLI
+    --env=dev: загружает данные из локального файла и передаёт, в качестве параметра
+    --env=prod: загружает файл с FTP, считывает данные и передаёт в качестве параметра
+    """
+    env = collector.config.getoption("env")
+    if env == "prod" and name == "TestFileUploadAndProcessing":
+        pytest.mark.skip(reason=f"{name} пропущен. Тест запускается только в dev среде")(obj)
+
+    if name == "TestPrlistDBF":
+        data = load_files(env, "PRLIST.DBF", "CODE")
+        if data is False:
+            pytest.fail(reason=f"Передан неизвестный параметр: {env}")
+
+        pytest.mark.parametrize("product_code, prlist_dbf_data", data)(obj)
+
+    if name == "TestProductsDataCsv":
+        data = load_files(env, "ProductsData.csv", "ProductCode")
+        if data is False:
+            pytest.fail(reason=f"Передан неизвестный параметр: {env}")
+
+        pytest.mark.parametrize("code, products_data_csv", data)(obj)
