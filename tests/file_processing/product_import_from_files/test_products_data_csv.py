@@ -9,9 +9,9 @@ class TestProductsDataCsv(ProductsBaseTest):
     crm_data = None
     
     @pytest.fixture(autouse=True)
-    def get_crm_data_by_product_code(self, code, product_properties):
+    def get_crm_data_by_product_code(self, code, product_properties_from_crm):
         """ Возвращает данные по товару из БД"""
-        conn = product_properties
+        conn = product_properties_from_crm
         cur = conn.cursor()
         cur.execute(f"SELECT * FROM crm_products WHERE PRODUCT_ID={code}")
         self.crm_data = cur.fetchone()
@@ -29,6 +29,7 @@ class TestProductsDataCsv(ProductsBaseTest):
     def test_check_property_weight(self, products_data_csv):
         """ Проверяет свойство 'Вес'"""
         if self.crm_data[8] == None:
+            expected_weight = products_data_csv.UnitWeight.iloc[0].replace(',', '.')
             assert expected_weight == self.crm_data[8],\
             f"Ожидаемый {expected_weight}, Фактический {self.crm_data[8]}"
         else:

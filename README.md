@@ -79,7 +79,27 @@ def test_login(auth_page, login, password, expected):
 
 В общем, лучше создавать отдельные функции для проверки каждого элемента функционала, чтобы тесты были более понятными и легкими для отладки. Это также упрощает поддержку и расширение тестов в будущем.
 
-### Запуск тестов с отчетом allure
-pytest --alluredir=allure-results --env=dev --url=54448 -v tests/base/test_authorization.py tests/deal/test_reorder_boutiques.py
-# Генерация и открытие отчета
-allure serve allure-results
+# Описание проекта
+
+### Запуск тестов
+Запуск тестов выполоняется следующей командой:
+`pytest tests` - запускает все тесты, находящиеся в папке 'tests'
+`pytest tests/path/to/file.py` - запускает тесты в указанном модуле
+
+Опции:
+`-v` - выводит в консоль подробное описание ошибок
+`-s` - выводит в консоль print() из методов
+`--env=prod` - запускает тесты в продуктовой среде
+`--env=dev` - запускает тесты на тестовой площадке
+`--alluredir=allure-results` - запуск теста с генерацией отчета Allure
+
+Если требуется запустить тесты на конкретной тестовой площадке, то требуется запустить тесты с опциями:
+`--env=dev --url=54448` - запускает тесты на тестовой площадке 54448
+
+Просмотр отчета после выполнении тестов:
+`allure serve allure-results` - запустить команду после завершения всех тестов
+
+Пример запуска:
+```pytest --alluredir=allure-results --env=dev --url=54448 -v tests/base/test_authorization.py tests/deal/test_reorder_boutiques.py```
+В данном примере запускается автотест test_reorder_boutiques.py с генерацией атчета Allure, в dev-среде (https://54448.crm.taskfactory.ru/) с подробным выводом результатов в консаоль 
+

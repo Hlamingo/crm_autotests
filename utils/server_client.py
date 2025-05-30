@@ -31,12 +31,14 @@ class ServerClient:
     def hostname_url(self):
         """ Вспомогательный метод для получения url FTP-сервера """
         if self.base_url == Config.PROD_URL:
-            pass #здесь ввести url для подключения к FTP-прода
+            return "46.243.201.23" #здесь ввести url для подключения к FTP-прода
         else:
             return "crm.taskfactory.ru"
 
     def php_script_runner(self, php_script_path, option=None):
         """ Запускает php скрипт на тестовой площадке 
+        php_script_path: php скрипт
+        option: опции для запуска php скрипта
         stdin: стандартный поток ввода, можно использовать если скрипт 
         ждет данные
         stdout: стандартный поток вывода
@@ -98,9 +100,12 @@ class ServerClient:
         except FileNotFoundError:
             return False
     
-    def ftp_file_reader(self, remote_file_path):
+    def ftp_file_reader(self, file_name):
         """ Считывает содержимое файлов на FTP """
-        ftp_file_path = f"/home/dev/admin_files/{remote_file_path}"
+        if self.base_url != Config.PROD_URL:
+            ftp_file_path = f"/home/dev/admin_files/{file_name}" #путь к файлу на проде
+        else:
+            ftp_file_path = file_name
         with pysftp.Connection(host=self.hostname, username=self.ssh_log, private_key=self.key_path) as sftp:
             with sftp.open(ftp_file_path) as remote_file:
                 return remote_file.read()

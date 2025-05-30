@@ -10,12 +10,12 @@ class TestProductsMoreCsv(ProductsBaseTest):
     crm_data = None
     
     @pytest.fixture(autouse=True)
-    def get_crm_data_by_product_code(self, code, product_properties):
+    def get_crm_data_by_product_code(self, code, product_properties_from_crm):
         """ Возвращает данные по товару из БД"""
         if code != code:
             pytest.skip(f"Строка в файле ProductsMore.csv пустая: {code}")
         
-        conn = product_properties
+        conn = product_properties_from_crm
         cur = conn.cursor()
         cur.execute(f"SELECT * FROM crm_products WHERE PRODUCT_ID={code}")
         self.crm_data = cur.fetchone()
