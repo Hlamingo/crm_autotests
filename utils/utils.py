@@ -6,11 +6,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import json
 from dbfread import DBF
 import pandas as pd
+from io import StringIO
 
-
-def read_file(file_path):
+def read_file(file_path, bytes_io=False):
     """ Считывает файл и возвращает содержимое """
-    if "json" in str(file_path):
+    if bytes_io is True:
+        pd.read_csv(file_path, dtype =str, encoding='cp1251', engine='python')
+    elif "json" in str(file_path):
         with open(file_path, 'r', encoding='utf-8') as data:
             return json.load(data)
     elif "DBF" in str(file_path):
@@ -21,6 +23,12 @@ def read_file(file_path):
         with open(file_path, 'r') as data:
             return data.read()
             
+def read_file_from_buffer(buffer_data, suffix = None):
+    """Считывает данные из буфура и возвращает содержимое"""
+    if suffix == 'csv':
+        buffer = StringIO(buffer_data.decode('cp1251'))
+        return pd.read_csv(buffer)
+    
 def write_file(file_path, data):
     """ Записывает файл """
     if "json" in str(file_path):

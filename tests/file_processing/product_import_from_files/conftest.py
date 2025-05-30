@@ -1,5 +1,5 @@
 from utils.server_client import ServerClient
-from utils.utils import read_file
+from utils.utils import read_file, read_file_from_buffer
 import tempfile
 import pytest
 import sqlite3
@@ -24,20 +24,20 @@ def product_properties(base_url, api_client, db_connection):
 
 def load_files(env, file_name, sort_value):
     """Загружает данные из файла и возвращает список"""
-    if env == "dev": # Загружает данные из локального файла PRLIST.DBF
+    if env == "dev": # Загружает данные из локального файла
 
         folder_path = "data/prlist_dbf"
         sorted_file = read_file(f"{folder_path}/{file_name}").sort_values(sort_value)
         return [(product_code, file_data) for product_code, file_data in sorted_file.groupby(sort_value)]
 
-    elif env == "prod": # Загружает файл PRLIST.DBF c FTP
+    elif env == "prod": # Загружает файл c FTP
 
         server_client = ServerClient("https://54448.crm.taskfactory.ru")
         ftp_file = server_client.ftp_file_reader(file_name)
 
         if file_name.endswith(".csv"):
 
-            sorted_prlist = read_file(ftp_file).sort_values(sort_value)
+            sorted_prlist = read_file_from_buffer(ftp_file, 'csv').sort_values(sort_value)
             return [(product_code, prlist_dbf_data) for product_code, prlist_dbf_data in
                     sorted_prlist.groupby(sort_value)]
         else:
@@ -48,10 +48,9 @@ def load_files(env, file_name, sort_value):
                 sorted_prlist = read_file(temp_file.name).sort_values(sort_value)
                 return [(product_code, prlist_dbf_data) for product_code, prlist_dbf_data in
                         sorted_prlist.groupby(sort_value)]
-
     else:
         return False
-
+        
 def pytest_pycollect_makeitem(collector, name, obj):
     """ Передаёт параметры в тестовый класс в зависимости от CLI
     --env=dev: загружает данные из локального файла и передаёт, в качестве параметра
@@ -74,3 +73,10 @@ def pytest_pycollect_makeitem(collector, name, obj):
             pytest.fail(reason=f"Передан неизвестный параметр: {env}")
 
         pytest.mark.parametrize("code, products_data_csv", data)(obj)
+        
+    if name == "TestProductsMoreCsv":
+        data = load_files(env, "ProductsMore.csv", "ProductCode")
+        if data is False:
+            pytest.fail(reason=f"Передан неизвестный параметр: {env}")
+
+        pytest.mark.parametrize("code, products_more_csv", data)(obj)

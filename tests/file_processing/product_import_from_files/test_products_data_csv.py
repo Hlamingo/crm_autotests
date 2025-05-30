@@ -9,7 +9,7 @@ class TestProductsDataCsv(ProductsBaseTest):
     crm_data = None
     
     @pytest.fixture(autouse=True)
-    def get_db_data_by_product_id(self, code, product_properties):
+    def get_crm_data_by_product_code(self, code, product_properties):
         """ Возвращает данные по товару из БД"""
         conn = product_properties
         cur = conn.cursor()

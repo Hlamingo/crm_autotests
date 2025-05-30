@@ -2,6 +2,9 @@
 data/*
 !data/* .py
 
+#Игнорируем файл БД
+*.db
+
 # Allure reports
 allure-results/
 allure-report/
