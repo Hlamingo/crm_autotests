@@ -4,23 +4,25 @@ from utils.utils import read_file, read_file_from_buffer
 import tempfile
 import pytest
 import sqlite3
+from allure_commons.logger import AllureFileLogger
+import allure_commons
 
 @pytest.fixture(scope='session')
 def db_connection():
     """ Фикстура для подключения к БД """
-    conn = sqlite3.connect(":memory:")
+    conn = sqlite3.connect("test_data.db")
     yield conn
     conn.close()
 
 @pytest.fixture(scope="session")
 def product_properties_from_crm(base_url, api_client, db_connection):
     """ Фикстура для работы с тестовыми данными из БД """
-    product_processing = ProductImportFromFiles(base_url)
-    product_processing.create_crm_products_table(db_connection)
-    product_list = product_processing.product_list(api_client)
-    product_processing.insert_product_list(product_list, db_connection)
-    product_price = product_processing.product_price(api_client)
-    product_processing.update_product_price(product_price, db_connection)
+    # ~ product_processing = ProductImportFromFiles(base_url)
+    # ~ product_processing.create_crm_products_table(db_connection)
+    # ~ product_list = product_processing.product_list(api_client)
+    # ~ product_processing.insert_product_list(product_list, db_connection)
+    # ~ product_price = product_processing.product_price(api_client)
+    # ~ product_processing.update_product_price(product_price, db_connection)
     return db_connection
 
 def load_files(env, file_name, sort_value):
@@ -102,3 +104,36 @@ def pytest_pycollect_makeitem(collector, name, obj):
         
         ids = [f"Product code: {code[0]}" for code in data]
         pytest.mark.parametrize("code, products_more_csv", data)(obj)
+
+def pytest_runtest_makereport(item, call):
+    """Исключает успешные тесты (passed) из allure отчёта"""
+    if call.when == "setup":
+        if isinstance(call.excinfo, pytest.ExceptionInfo):
+            report_dir = item.config.option.allure_report_dir
+            clean = False if item.config.option.collectonly else item.config.option.clean_alluredir
+            file_logger = AllureFileLogger(report_dir, clean)
+            allure_commons.plugin_manager.register(file_logger)
+            
+    if call.when == "call":
+        if call.excinfo is None:
+            registered_plugins = allure_commons.plugin_manager.get_plugins()
+            for plugin in registered_plugins:
+                if isinstance(plugin, allure_commons.logger.AllureFileLogger):
+                    cleanup_function = cleanup_factory(plugin)  # Получаем функцию очистки
+                    cleanup_function()
+                else:
+                    continue
+        else:
+            report_dir = item.config.option.allure_report_dir
+            clean = False if item.config.option.collectonly else item.config.option.clean_alluredir
+            file_logger = AllureFileLogger(report_dir, clean)
+            allure_commons.plugin_manager.register(file_logger)
+    
+def cleanup_factory(plugin):
+    """ Вспомогательная функция для очистки удаления плагина 
+    (взят из файла allure_pytest/plugin.py)
+    """
+    def clean_up():
+        name = allure_commons.plugin_manager.get_name(plugin)
+        allure_commons.plugin_manager.unregister(name=name)
+    return clean_up
