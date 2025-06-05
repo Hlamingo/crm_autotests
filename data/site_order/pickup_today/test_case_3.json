@@ -1,0 +1,325 @@
+{
+    "DATE_FORMAT": "d.m.Y",
+    "DATE_TIME_FORMAT": "d.m.Y H:i:s",
+    "SITE_DOMAINS": [
+        "luding.ru"
+    ],
+    "COUPON_SUBSCRIBE_MATCH": "",
+    "FIELDS": {
+        "ID": "99999999999",
+        "LID": "s1",
+        "ACCOUNT_NUMBER": "99999999999",
+        "PAY_SYSTEM_ID": "2",
+        "DELIVERY_ID": "1",
+        "DATE_INSERT": "20.02.2025 18:43:51",
+        "DATE_UPDATE": "20.02.2025 18:43:51",
+        "PERSON_TYPE_ID": "1",
+        "USER_ID": "248870",
+        "PAYED": "N",
+        "IS_SYNC_B24": "N",
+        "DEDUCTED": "N",
+        "STATUS_ID": "N",
+        "DATE_STATUS": "20.02.2025 18:43:49",
+        "EMP_STATUS_ID": "248870",
+        "MARKED": "N",
+        "PRICE_DELIVERY": "0",
+        "ALLOW_DELIVERY": "N",
+        "RESERVED": "N",
+        "PRICE": "1804",
+        "CURRENCY": "RUB",
+        "DISCOUNT_VALUE": "0",
+        "TAX_VALUE": "0.00",
+        "SUM_PAID": "0",
+        "CREATED_BY": "248870",
+        "IS_RECURRING": "N",
+        "RECOUNT_FLAG": "Y",
+        "UPDATED_1C": "N",
+        "XML_ID": "bx_67b74db5bc29e",
+        "VERSION": "0",
+        "EXTERNAL_ORDER": "N",
+        "CANCELED": "N",
+        "RUNNING": "N",
+        "USER": {
+            "EMAIL": "testtesttestkovaleva@yandex.ru",
+            "PHONE": "79000000101"
+        }
+    },
+    "PROPERTIES": {
+        "ZIP": {
+            "NAME": "Индекс",
+            "VALUE": ""
+        },
+        "PAYMENT_URL": {
+            "NAME": "Ссылка на оплату",
+            "VALUE": ""
+        },
+        "aid": {
+            "NAME": "aid",
+            "VALUE": ""
+        },
+        "AVAILABLE_REQUEST": {
+            "NAME": "Узнать о поступлении",
+            "VALUE": "N"
+        },
+        "COORDS": {
+            "NAME": "Координаты",
+            "VALUE": ""
+        },
+        "RECIPIENT_PHONE": {
+            "NAME": "Телефон",
+            "VALUE": ""
+        },
+        "EXPRESS_DELIVERY": {
+            "NAME": "Экспресс доставка",
+            "VALUE": "N"
+        },
+        "DELIVERY_COMMENT": {
+            "NAME": "Комментарий к доставке",
+            "VALUE": ""
+        },
+        "PRIVATE_HOUSE": {
+            "NAME": "Частный дом",
+            "VALUE": "N"
+        },
+        "CHANGE": {
+            "NAME": "Сдача с",
+            "VALUE": ""
+        },
+        "EXPIRED_PAYMENT_SENT": {
+            "NAME": "Уведомление об истекшем времени платежа",
+            "VALUE": "N"
+        },
+        "COMMUNICATION_CHANEL": {
+            "NAME": "Канал коммуникации",
+            "VALUE": "SMS"
+        },
+        "TRUSTED_CLIENT": {
+            "NAME": "Доверительная корзина",
+            "VALUE": "N"
+        },
+        "MINDBOX_DEVICE_UUID": {
+            "NAME": "MINDBOX_DEVICE_UUID",
+            "VALUE": "14530214-76b6-48d5-a3b2-5d69035fbad8"
+        },
+        "ORDER_ITEMS": {
+            "NAME": "Исходный состав",
+            "VALUE": "81792: 1 шт, 78700: 1 шт"
+        },
+        "S2S_CLICK_ID": {
+            "NAME": "s2s click_id",
+            "VALUE": ""
+        },
+        "COUPON": {
+            "NAME": "Купон",
+            "VALUE": ""
+        },
+        "GDE_SLON_LAST_SOURCE": {
+            "NAME": "GDE_SLON_LAST_SOURCE",
+            "VALUE": ""
+        },
+        "ADMITAD_UID": {
+            "NAME": "ADMITAD_UID",
+            "VALUE": ""
+        },
+        "PICKUP_TODAY": {
+            "NAME": "Забрать сегодня",
+            "VALUE": "Y"
+        },
+        "CITY": {
+            "NAME": "Город",
+            "VALUE": ""
+        },
+        "FLOOR": {
+            "NAME": "Этаж",
+            "VALUE": ""
+        },
+        "UTM": {
+            "NAME": "Источник",
+            "VALUE": ""
+        },
+        "UTM_LAST": {
+            "NAME": "Последний источник",
+            "VALUE": [
+                "UTM_Source: type-in",
+                "UTM_Medium: direct",
+                "date: 2025-02-20 18:41:11"
+            ]
+        },
+        "UTM_FIRST": {
+            "NAME": "Первоисточник",
+            "VALUE": [
+                "UTM_Source: type-in",
+                "UTM_Medium: direct",
+                "date: 2025-02-20 13:32:20"
+            ]
+        },
+        "IS_YM": {
+            "NAME": "Из яндекс.маркета",
+            "VALUE": "N"
+        },
+        "PICKPOINT": {
+            "NAME": "Точка выдачи (ID)",
+            "VALUE": ""
+        },
+        "PICKPOINT_NAME": {
+            "NAME": "Точка выдачи",
+            "VALUE": ""
+        },
+        "COMPANY_ID": {
+            "NAME": "Внешний идентификатор компании",
+            "VALUE": ""
+        },
+        "PRICE_REQUEST": {
+            "NAME": "Запрос цены",
+            "VALUE": "N"
+        },
+        "CONTRACT": {
+            "NAME": "Договор",
+            "VALUE": ""
+        },
+        "IS_RNK": {
+            "NAME": "РНК",
+            "VALUE": "Y"
+        },
+        "RESERVATION": {
+            "NAME": "Бронирование",
+            "VALUE": "N"
+        },
+        "ADDRESS": {
+            "NAME": "Улица",
+            "VALUE": ""
+        },
+        "HOUSE": {
+            "NAME": "Дом",
+            "VALUE": ""
+        },
+        "STRUCTURE": {
+            "NAME": "Корпус\\строение",
+            "VALUE": ""
+        },
+        "PORCH": {
+            "NAME": "Подъезд",
+            "VALUE": ""
+        },
+        "FLAT": {
+            "NAME": "Квартира",
+            "VALUE": ""
+        },
+        "INTERCOM": {
+            "NAME": "Домофон",
+            "VALUE": ""
+        },
+        "HIDE_IN_LK": {
+            "NAME": "Скрыть в ЛК пользователя",
+            "VALUE": "N"
+        },
+        "ADDRESS_RAW": {
+            "NAME": "Полный адрес из DaData",
+            "VALUE": ""
+        },
+        "EXPRESS_CALL": {
+            "NAME": "Нужен звонок менеджера",
+            "VALUE": "N"
+        },
+        "SLOT_DATE": {
+            "NAME": "Дата доставки",
+            "VALUE": ""
+        },
+        "RECIPIENT_NAME": {
+            "NAME": "Имя",
+            "VALUE": ""
+        },
+        "SLOT_TIME_FROM": {
+            "NAME": "Время доставки от",
+            "VALUE": ""
+        },
+        "SLOT_TIME_TO": {
+            "NAME": "Время доставки до",
+            "VALUE": ""
+        },
+        "RECIPIENT_COMMENT": {
+            "NAME": "Примечание",
+            "VALUE": ""
+        },
+        "ADDRESS_COMMENT": {
+            "NAME": "Комментарий к адресу",
+            "VALUE": ""
+        }
+    },
+    "PRODUCT_CODES": [
+        "81792",
+        "78700"
+    ],
+    "BASKET": [
+        {
+            "QUANTITY": "1.0000",
+            "PRICE": "1112",
+            "CUSTOM_PRICE": "N",
+            "BASE_PRICE": "2780",
+            "CURRENCY": "RUB",
+            "NAME": "Domwill Blended Malt Scotch Whisky",
+            "DISCOUNT_PRICE": "1668",
+            "DISCOUNT": {
+                "ID": "54102",
+                "XML_ID": "92984",
+                "NAME": "Это ураган! Суперцены на напитки",
+                "COUPON": "",
+                "RESULT_VALUE": "1668"
+            },
+            "PROPERTIES": {
+                "PRODUCT.XML_ID": {
+                    "NAME": "Product XML_ID",
+                    "VALUE": "346535#346536"
+                },
+                "PICKPOINT_NAME": {
+                    "NAME": "Точка выдачи",
+                    "VALUE": "Ильинский б-р, 8"
+                },
+                "PICKPOINT": {
+                    "NAME": "Точка выдачи (ID)",
+                    "VALUE": "50878"
+                },
+                "PICKPOINT_CRM": {
+                    "NAME": "Точка выдачи (CRM_ID)",
+                    "VALUE": "11"
+                },
+                "PRODUCT_CODE": {
+                    "NAME": "Код товара",
+                    "VALUE": "81792"
+                }
+            }
+        },
+        {
+            "QUANTITY": "1.0000",
+            "PRICE": 1277,
+            "CUSTOM_PRICE": "Y",
+            "BASE_PRICE": 2580,
+            "CURRENCY": "RUB",
+            "NAME": "Ньювен Патагония Совиньон Блан 2021 сортовое бел. сух. 0,75л по 6 Бодега дель Мундо СА, \/Аргентина\/, 4610094287575",
+            "DISCOUNT_PRICE": 0,
+            "DISCOUNT": false,
+            "PROPERTIES": {
+                "PRODUCT.XML_ID": {
+                    "NAME": "Product XML_ID",
+                    "VALUE": "202845#291532"
+                },
+                "PICKPOINT_NAME": {
+                    "NAME": "Точка выдачи",
+                    "VALUE": "Ильинский б-р, 8"
+                },
+                "PICKPOINT": {
+                    "NAME": "Точка выдачи (ID)",
+                    "VALUE": "50878"
+                },
+                "PICKPOINT_CRM": {
+                    "NAME": "Точка выдачи (CRM_ID)",
+                    "VALUE": "11"
+                },
+                "PRODUCT_CODE": {
+                    "NAME": "Код товара",
+                    "VALUE": "78700"
+                }
+            }
+        }
+    ]
+}
