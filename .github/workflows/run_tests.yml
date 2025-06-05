@@ -1,0 +1,24 @@
+name: Run tests of processing files PRLIST.DBF, ProductsData.csv and ProductsMore.csv
+
+on:
+  push
+
+jobs:
+  TestPrlistDBF:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Firefox
+        run:
+          sudo apt-get update
+          sudo apt-get install firefox
+      - name: install dependencies
+        run: pip install -r requirements.txt
+      - name: Run TestPrlistDBF
+        run: pytest -n auto --env=prod tests/file_processing/product_import_from_files/test_prlist_dbf.py
