@@ -19,7 +19,8 @@ class TestProductsMoreCsv(ProductsBaseTest):
         cur = conn.cursor()
         cur.execute(f"SELECT * FROM crm_products WHERE PRODUCT_ID={code}")
         self.crm_data = cur.fetchone()
-        assert self.crm_data is not None, f"Код товара {product_code} отсутствует в CRM"
+        if self.crm_data is None:
+            pytest.fail(f"Код товара {code} отсутствует в CRM")
     
     @allure.title("Проверка свойства 'Код аналога'")
     def test_analog_code(self, products_more_csv):

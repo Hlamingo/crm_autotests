@@ -16,7 +16,7 @@ class TestProductsDataCsv(ProductsBaseTest):
         cur.execute(f"SELECT * FROM crm_products WHERE PRODUCT_ID={code}")
         self.crm_data = cur.fetchone()
         if self.crm_data is None:
-            pytest.fail( f"Код товара {product_code} отсутствует в CRM")
+            pytest.fail( f"Код товара {code} отсутствует в CRM")
     
     @allure.title("Проверка свойства 'Наименование'")
     def test_check_property_name(self, products_data_csv):

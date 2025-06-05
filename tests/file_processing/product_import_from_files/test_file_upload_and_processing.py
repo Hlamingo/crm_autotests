@@ -3,7 +3,6 @@ import pytest
 import allure
 
 @allure.feature("Обработка файлов PRLIST.DBF, ProductsData.csv и ProductsMore.csv")
-@pytest.mark.order(1)
 class TestFileUploadAndProcessing(ProductsBaseTest):
     
     file_path = "data/prlist_dbf"
