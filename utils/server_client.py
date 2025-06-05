@@ -1,19 +1,44 @@
 import paramiko
 import pysftp
 from dotenv import load_dotenv
+from utils.config import Config
 import os
+
+class PHPScripts:
+    """ Список PHP-скриптов """
+    def __init__ (self):
+        self.product_import_from_files = "local/php_interface/console product_import_from_files"
 
 class ServerClient:
     """ Класс для взаимодействия с сервером """
-    def __init__ (self):
+    def __init__ (self, base_url):
         load_dotenv()
         self.key_path = os.getenv("SSH_KEY")
         self.ssh_log = os.getenv("SSH_LOGIN")
-        self.hostname = "crm.taskfactory.ru"
-        self.environment = None
+        self.base_url = base_url
+        self.hostname = self.hostname_url()
+        self.environment = self.environment_url()
+        
+    def environment_url(self):
+        """ Вспомогательный метод для получения окружения """
+        if self.base_url == Config.PROD_URL:
+            return Config.PROD_URL
+        else:
+            return next(
+                key for key, value in Config.DEV_URLS.items() if value == self.base_url
+                )
+            
+    def hostname_url(self):
+        """ Вспомогательный метод для получения url FTP-сервера """
+        if self.base_url == Config.PROD_URL:
+            return "46.243.201.23" #здесь ввести url для подключения к FTP-прода
+        else:
+            return "crm.taskfactory.ru"
 
-    def php_script_runner(self, php_script_path):
+    def php_script_runner(self, php_script_path, option=None):
         """ Запускает php скрипт на тестовой площадке 
+        php_script_path: php скрипт
+        option: опции для запуска php скрипта
         stdin: стандартный поток ввода, можно использовать если скрипт 
         ждет данные
         stdout: стандартный поток вывода
@@ -25,19 +50,63 @@ class ServerClient:
         ssh.connect(self.hostname, username=self.ssh_log, pkey=key)
         
         command = f'php www/{self.environment}/{php_script_path}'
+        if option:
+            command = f'php www/{self.environment}/{php_script_path} {option}'
+        print(command)
         stdin, stdout, stderr = ssh.exec_command(command)
-        print(stdout.read().decode())
-        print(stderr.read().decode())
         
-        ssh.close()
+        output = []
+        error_output = []
+        
+        # Считывает вывод cmd до завершения запуска скрипта
+        while True:
+            line = stdout.readline()
+            if not line:
+                break
+            output.append(line)
+            print(line, end='')  # Вывод в консоль
     
+        # Считывает ошибки из cmd
+        while True:
+            line = stderr.readline()
+            if not line:
+                break
+            error_output.append(line)
+            print(line, end='')
+    
+        ssh.close()
+        
+        error_output = ''.join(error_output)
+        message = ''.join(output)
+        
+        # Проверяет результат завершения выполнения скрипта: 0 - успех
+        exit_status = stdout.channel.recv_exit_status()
+        
+        if exit_status != 0 or "ошибка" in error_output.lower():
+            return False, error_output or message
+        else:
+            return True, message
+            
     def ftp_file_uploader(self, local_file_path):
         """ Загружает файлы на FTP тестовой площадки """
         remote_file_path = f"/home/dev/www/{self.environment}/admins_files"
-        
-        with pysftp.Connection(
-            host=self.hostname, username=self.ssh_log, 
-            private_key=self.key_path) as sftp:
-            sftp.chdir(remote_file_path)
-            return sftp.put(local_file_path)
+        try:
+            with pysftp.Connection(
+                host=self.hostname, username=self.ssh_log,
+                private_key=self.key_path) as sftp:
+                sftp.chdir(remote_file_path)
+                sftp.put(local_file_path)
+                return sftp.listdir()
+        except FileNotFoundError:
+            return False
+    
+    def ftp_file_reader(self, file_name):
+        """ Считывает содержимое файлов на FTP """
+        if self.base_url != Config.PROD_URL:
+            ftp_file_path = f"/home/dev/admin_files/{file_name}" #путь к файлу на проде
+        else:
+            ftp_file_path = file_name
+        with pysftp.Connection(host=self.hostname, username=self.ssh_log, private_key=self.key_path) as sftp:
+            with sftp.open(ftp_file_path) as remote_file:
+                return remote_file.read()
     

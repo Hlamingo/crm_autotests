@@ -1,18 +1,34 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import json
+from dbfread import DBF
+import pandas as pd
+from io import StringIO
 
-def read_file(file_path):
+def read_file(file_path, bytes_io=False):
     """ Считывает файл и возвращает содержимое """
-    if "json" in str(file_path):
+    if bytes_io is True:
+        pd.read_csv(file_path, dtype =str, encoding='cp1251', engine='python')
+    elif "json" in str(file_path):
         with open(file_path, 'r', encoding='utf-8') as data:
             return json.load(data)
+    elif "DBF" in str(file_path):
+        return pd.DataFrame(iter(DBF(file_path)))
+    elif "csv" in str(file_path):
+        return pd.read_csv(file_path, dtype =str, encoding='cp1251', engine='python')
     else:
         with open(file_path, 'r') as data:
             return data.read()
             
+def read_file_from_buffer(buffer_data, suffix = None):
+    """Считывает данные из буфура и возвращает содержимое"""
+    if suffix == 'csv':
+        buffer = StringIO(buffer_data.decode('cp1251'))
+        return pd.read_csv(buffer)
+    
 def write_file(file_path, data):
     """ Записывает файл """
     if "json" in str(file_path):
@@ -33,7 +49,11 @@ def remove_dir(file_path):
             os.rmdir(file_path)
 
 def get_file_path(relative_path):
-    """ Вовзращает абсолютный путь к файлу """
+    """ Возвращает абсолютный путь к файлу """
     load_dotenv()
-    base_dir = os.getenv('BASE_DIR', os.path.dirname(os.path.abspath(__file__)))
-    return os.path.join(base_dir, relative_path)
+    base_dir = Path(os.getenv('BASE_DIR', Path(__file__).resolve().parent))
+    return base_dir / relative_path
+
+def get_file_from_dir(file_path):
+    """ Возвращает список файлов из директории """
+    return os.listdir(file_path)

@@ -1,13 +1,16 @@
 import os
 from dotenv import load_dotenv
 import requests
+from fast_bitrix24 import Bitrix
 
 class APIMethods:
     """ Класс с методами Битрикс 24 """
     def __init__(self):
-        self.site_deal_create = "/site.deal.create" # метод создания сделки
-        self.crm_deal_get = "/crm.deal.get.json" # метод получения данных по сделке
-        self.user_get = "user.get.json" # метод получения данных по пользователю
+        self.site_deal_create = "/site.deal.create" # создания сделки
+        self.crm_deal_get = "/crm.deal.get.json" # получения данных по сделке
+        self.user_get = "/user.get.json" # получения данных по пользователю
+        self.crm_product_list = "/crm.product.list.json" # получение списка товаров
+        self.crm_product_get = "/crm.product.get.json" # получение свойств товара по id
 
 class ApiClient:
     """ Работа с REST-Методами CRM """
@@ -17,6 +20,7 @@ class ApiClient:
         token = os.getenv("TOKEN")
         self.base_url = f"{base_url}/rest/{user_id }/{token}"
         self.method = APIMethods()
+        self.bx = Bitrix(self.base_url)
     
     def request(self, method, endpoint, data=None):
         """ Выполняет HTTP-запрос к указанному endpoint """
@@ -24,4 +28,5 @@ class ApiClient:
         if method == "GET":
             return requests.get(url)
         elif method == "POST":
-            return requests.post(url, json=data)   
+            return requests.post(url, json=data)
+        
