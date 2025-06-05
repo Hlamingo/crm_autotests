@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install Firefox
-        run:
+        run: |
           sudo apt-get update
           sudo apt-get install firefox
       - name: install dependencies
