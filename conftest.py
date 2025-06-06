@@ -14,7 +14,7 @@ def browser():
     Gecko/20100101 Firefox/128.0'
     options = Options()
     options.add_argument("--headless")
-    options.add_argument("--no-sandbox")
+    # ~ options.add_argument("--no-sandbox")
     options.set_preference("general.useragent.override", user_agent)
     service = Service(GeckoDriverManager().install())
     driver = webdriver.Firefox(service = service, options = options)
