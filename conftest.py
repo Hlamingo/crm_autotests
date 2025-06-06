@@ -1,23 +1,23 @@
 import pytest
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
+from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
 from utils.config import get_url
 from utils.utils import remove_file, remove_dir
 from api.crm_api_client import ApiClient
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope = 'session')
 def browser():
-    """Фикстура для инициализации и управления экземпляром браузера Chrome."""
-    user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) \
-    AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
+    """Фикстура для инициализации и управления экземпляром браузера Firefox."""
+    user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) \
+    Gecko/20100101 Firefox/128.0'
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
-    options.add_argument(f"user-agent={user_agent}")
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=options)
+    options.set_preference("general.useragent.override", user_agent)
+    service = Service(GeckoDriverManager().install())
+    driver = webdriver.Firefox(service = service, options = options)
     driver.set_window_size(1920, 1080)
     yield driver
     driver.quit()
