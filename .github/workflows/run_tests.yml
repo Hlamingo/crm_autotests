@@ -1,10 +1,17 @@
 name: Run tests of processing files PRLIST.DBF, ProductsData.csv and ProductsMore.csv
 
 on:
-  push
+  workflow_dispatch:
+    inputs:
+      test_type:
+      description: 'Authorization'
+        default: 'TestAuthorization'
+        options:
+          - TestAuthorization
+          - TestPrlistDBF
 
 jobs:
-  TestPrlistDBF:
+  run_crm_autotests:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,4 +28,12 @@ jobs:
       - name: install dependencies
         run: pip install -r requirements.txt
       - name: Run TestPrlistDBF
+        if: ${{github.event.inputs.test_type == 'TestPrlistDBF'}}
         run: pytest -n auto --env=prod tests/file_processing/product_import_from_files/test_prlist_dbf.py
+      - name: Run TestAuthorization
+        if: ${{github.event.inputs.test_type == 'TestAuthorization'}}
+        env:
+          LOGIN: ${{secrets.LOGIN}}
+          PASSWORD: ${{secrets.PASSWORD}}
+        run: pytest --env=dev tests/base/test_authorization.py
+      
