@@ -23,9 +23,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install Firefox
-        run: |
-          sudo apt update
-          sudo snap install firefox
+        uses: browser-actions/setup-firefox@v1
       - name: install dependencies
         run: pip install -r requirements.txt
       - name: Run TestPrlistDBF
