@@ -1,10 +1,10 @@
-name: Run tests of processing files PRLIST.DBF, ProductsData.csv and ProductsMore.csv
+name: Run crm autotests
 
 on:
   workflow_dispatch:
     inputs:
       test_type:
-      description: 'Authorization'
+        description: 'Authorization'
         default: 'TestAuthorization'
         options:
           - TestAuthorization
