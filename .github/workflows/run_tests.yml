@@ -35,6 +35,12 @@ jobs:
           LOGIN: ${{secrets.LOGIN}}
           PASSWORD: ${{secrets.PASSWORD}}
         run: pytest --alluredir=allure-results --env=dev tests/base/test_authorization.py
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 17
       
       - name: Load Allure results history
         if: always()
