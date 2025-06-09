@@ -41,7 +41,12 @@ jobs:
         with:
           distribution: zulu
           java-version: 17
-      
+  
+  generate_report:
+    runs-on: ubuntu-latest
+    needs: run_crm_autotests
+    name: Generate Allure report
+    steps:
       - name: Load Allure results history
         if: always()
         uses: actions/checkout@v4
