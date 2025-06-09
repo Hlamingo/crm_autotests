@@ -36,17 +36,31 @@ jobs:
           PASSWORD: ${{secrets.PASSWORD}}
         run: pytest --alluredir=allure-results --env=dev tests/base/test_authorization.py
 
+      - name: Upload Allure results  # Загружаем результаты тестов в GitHub Actions
+        if: always()  # Загружаем файлы независимо от успеха/неуспеха тестов
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results  # Название артефакта
+          path: allure-results  # Путь к файлам отчета
+  
+  generate_report:
+    needs: run_crm_autotests
+    runs-on: ubuntu-latest
+    name: Generate Allure report
+    
+    steps:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: zulu
           java-version: 17
-  
-  generate_report:
-    runs-on: ubuntu-latest
-    needs: run_crm_autotests
-    name: Generate Allure report
-    steps:
+          
+      - name: Check out repository
+        uses: actions/checkout@v4  # Клонируем репозиторий
+        with:
+          ref: gh-pages  # Клонируем ветку gh-pages
+          path: gh-pages  # Указываем путь, куда клонировать
+        
       - name: Load Allure results history
         if: always()
         uses: actions/checkout@v4
@@ -60,11 +74,11 @@ jobs:
         if: always()
         with:
           gh_pages: gh-pages
-          allure_history: allure-history
+          allure_history: allure-results
           allure_results: allure-results
           
       - name: Publish Allure report
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
