@@ -34,5 +34,30 @@ jobs:
         env:
           LOGIN: ${{secrets.LOGIN}}
           PASSWORD: ${{secrets.PASSWORD}}
-        run: pytest --env=dev tests/base/test_authorization.py
+        run: pytest --alluredir=allure-results --env=dev tests/base/test_authorization.py
       
+      - name: Load Allure results history
+        if: always()
+        uses: actions/checkout@v3
+        continue-on-error: true
+        with:
+          name: gh-pages
+          path: gh-pages
+      
+      - name: Build Allure report
+        uses: simple-elf/allure-report-action@v1.7
+        if: always()
+        with:
+          gh_pages: gh-pages
+          allure_history: allure-history
+          allure_results: allure-results
+          
+      - name: Publish Allure report
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          github_token: ${{secrets.GUTHUB_TOKEN}}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+        
+        
