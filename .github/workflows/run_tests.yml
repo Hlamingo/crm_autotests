@@ -54,7 +54,7 @@ jobs:
           mkdir allure-results
           unzip artifacts.zip -d allure-results
       - run: |
-          mkdir report_history
+          mkdir report_history pages_history
           unzip github_pages.zip -d report_history
           tar -xvf report_history/artifact.tar -C pages_history
       - run: cp pages_history/history allure-results
