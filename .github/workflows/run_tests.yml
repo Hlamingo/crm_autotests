@@ -78,7 +78,7 @@ jobs:
       - name: Save allure-results
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results
+          name: allure-history
           path: allure-results
           retention_days: 1
 
