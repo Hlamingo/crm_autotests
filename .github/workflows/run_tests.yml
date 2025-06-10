@@ -36,6 +36,30 @@ jobs:
           PASSWORD: ${{secrets.PASSWORD}}
         run: pytest --alluredir=allure-results --env=dev tests/base/test_authorization.py
       
+      - name: Upload Allure results
+        if: always()  # Всегда выполняем (даже если предыдущий шаг упал)
+        uses: actions/upload-artifact@v4  # Загружаем артефакт в CI
+        with:
+          name: allure-results  # Имя артефакта
+          path: allure-results  # Путь к директории с результатами Allure
+
+  generate_report:
+    needs: [ run_crm_autotests ]
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Check out repository  # Клонируем репозиторий, включая ветку gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages  # Операции будем выполнять в ветке gh-pages
+          path: gh-pages  # Клонируем файлы в папку gh-pages
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+          with:
+            distribution: zulu
+            java-version: 17
+            
       - name: Load Allure results history
         if: always()
         uses: actions/checkout@v4
@@ -44,18 +68,23 @@ jobs:
           name: gh-pages
           path: gh-pages
       
-      - name: Build Allure report
-        uses: simple-elf/allure-report-action@v1.7
+      - name: Download Allure results  # Загружаем ранее сохраненные результаты тестов
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results  # Название артефакта
+          path: allure-results  # Путь для скачивания
+
+      - name: Allure Report action from marketplace  # Генерация отчета Allure
+        uses: simple-elf/allure-report-action@v1.12
         if: always()
         with:
-          gh_pages: gh-pages
-          allure_history: allure-history
-          allure_results: allure-results
-          
-      - name: Publish Allure report
-        uses: peaceiris/actions-gh-pages@v3
+          allure_results: allure-results  # Папка с результатами тестов
+          allure_history: allure-history  # Папка для хранения истории отчетов
+
+      - name: Deploy report to Github Pages  # Публикация отчета на GitHub Pages
         if: always()
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Токен для доступа к репозиторию
+          publish_branch: gh-pages  # Публикуем отчет в ветку gh-pages
+          publish_dir: allure-history  # Папка, где находится сгенерированный отчет
