@@ -50,9 +50,9 @@ jobs:
     
       - name: Set up JDK
         uses: actions/setup-java@v3
-          with:
-            distribution: zulu
-            java-version: 17
+        with:
+          distribution: zulu
+          java-version: 17
       
       - name: Check out repository  # Клонируем репозиторий, включая ветку gh-pages
         uses: actions/checkout@v4
