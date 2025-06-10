@@ -11,6 +11,11 @@ on:
           - TestAuthorization
           - TestPrlistDBF
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   run_crm_autotests:
     runs-on: ubuntu-latest
