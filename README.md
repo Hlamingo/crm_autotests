@@ -101,5 +101,5 @@ def test_login(auth_page, login, password, expected):
 
 Пример запуска:
 ```pytest --alluredir=allure-results --env=dev --url=54448 -v tests/base/test_authorization.py tests/deal/test_reorder_boutiques.py```
-В данном примере запускается автотест test_reorder_boutiques.py с генерацией атчета Allure, в dev-среде (https://54448.crm.taskfactory.ru/) с подробным выводом результатов в консаоль 
+В данном примере запускается автотест test_reorder_boutiques.py с генерацией атчета Allure, в dev-среде (54448) с подробным выводом результатов в консаоль 
 
