@@ -57,7 +57,7 @@ jobs:
           mkdir report_history pages_history
           unzip github_pages.zip -d report_history
           tar -xvf report_history/artifact.tar -C pages_history
-      - run: cp pages_history/history allure-results
+      - run: cp -r pages_history/history allure-results
       - name: Save report history as artifact
         uses: actions/upload-artifact@v4
         with:
