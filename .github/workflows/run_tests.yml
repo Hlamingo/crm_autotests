@@ -55,6 +55,7 @@ jobs:
           distribution: 'zulu'
           java-version: 17
       - run: |
+          sudo apt-get install default-jre-headless
           wget https://github.com/allure-framework/allure2/releases/download/2.34.0/allure_2.34.0-1_all.deb
           sudo dpkg -i allure_2.34.0-1_all.deb
           sudo apt-get install -f
