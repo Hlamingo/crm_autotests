@@ -48,10 +48,11 @@ jobs:
     name: Generate report
 
     steps:
+
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'microsoft'
+          distribution: 'zulu'
           java-version: 17
       - run: |
           wget https://github.com/allure-framework/allure2/releases/download/2.34.0/allure_2.34.0-1_all.deb
