@@ -47,7 +47,7 @@ jobs:
         with:
           name: allure-results
           path: allure-results
-          retention_days: 1
+          retention-days: 1
 
   run_crm_autotests:
     needs: [ download_history_report ]
@@ -80,7 +80,7 @@ jobs:
         with:
           name: allure-history
           path: allure-results
-          retention_days: 1
+          retention-days: 1
 
   generate_report:
     needs: [ run_crm_autotests ]
@@ -108,7 +108,7 @@ jobs:
         with:
           name: _site
           path: _site
-          retention_days: 1
+          retention-days: 1
 
   publish_report:
     needs: [ generate_report ]
