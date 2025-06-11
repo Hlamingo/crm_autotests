@@ -1,0 +1,2 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Wed Jun 11 09:50:14 GMT 2025","Wed Jun 11 09:50:42 GMT 2025","28229","tests.base","test_authorization","TestAuthorization","","","Проверка авторизации в CRM",""
