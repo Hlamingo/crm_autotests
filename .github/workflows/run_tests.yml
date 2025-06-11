@@ -70,7 +70,7 @@ jobs:
           java-version: 17
           
       - name: Install Allure
-      - run: |
+        run: |
           sudo apt-get install default-jre-headless
           wget https://github.com/allure-framework/allure2/releases/download/2.34.0/allure_2.34.0-1_all.deb
           sudo dpkg -i allure_2.34.0-1_all.deb
@@ -98,25 +98,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
-          
-      #~ - name: Generate allure report
-        #~ uses: actions/upload-artifact@v4
-        #~ with:
-          #~ name: _site
-          #~ path: _site
-          #~ retention-days: 1
-
-  #~ publish_report:
-    #~ needs: [ generate_report ]
-    #~ runs-on: ubuntu-latest
-    #~ name: Publish report
-
-    #~ steps:
-      #~ - name: Download generated report
-        #~ uses: actions/download-artifact@v4
-      #~ - name: Upload Pages artifacts
-        #~ if: always()
-        #~ uses: actions/upload-pages-artifact@v3
-      #~ - name: Deploy to GitHub Pages
-        #~ id: deployment
-        #~ uses: actions/deploy-pages@v4
