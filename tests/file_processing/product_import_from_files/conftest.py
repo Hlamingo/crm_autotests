@@ -37,15 +37,15 @@ def cleanup_factory(plugin):
 
 def load_files(env, file_name, sort_value):
     """Загружает данные из файла и возвращает список"""
-    if env == "dev": # Загружает данные из локального файла
+    if env == "prod": # Загружает данные из локального файла
 
         folder_path = "data/prlist_dbf"
         sorted_file = read_file(f"{folder_path}/{file_name}").sort_values(sort_value)
         return [(product_code, file_data) for product_code, file_data in sorted_file.groupby(sort_value)]
 
-    elif env == "prod": # Загружает файл c FTP
+    elif env == "dev": # Загружает файл c FTP
 
-        server_client = ServerClient("https://crm.l-wine.ru")
+        server_client = ServerClient("https://54448.crm.taskfactory.ru")
         ftp_file = server_client.ftp_file_reader(file_name)
 
         if file_name.endswith(".csv"):
