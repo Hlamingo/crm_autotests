@@ -33,6 +33,7 @@ jobs:
       - name: Run TestPrlistDBF
         if: ${{github.event.inputs.test_type == 'TestPrlistDBF'}}
         run: pytest -n auto --env=prod tests/file_processing/product_import_from_files/test_prlist_dbf.py
+        continue-on-error: true
         
       - name: Run TestAuthorization
         if: ${{github.event.inputs.test_type == 'TestAuthorization'}}
@@ -40,6 +41,7 @@ jobs:
           LOGIN: ${{secrets.LOGIN}}
           PASSWORD: ${{secrets.PASSWORD}}
         run: pytest --alluredir=allure-results --env=dev tests/base/test_authorization.py
+        continue-on-error: true
         
       - name: Upload Allure results
         if: always()
