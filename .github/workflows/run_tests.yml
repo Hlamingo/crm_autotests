@@ -32,7 +32,9 @@ jobs:
         
       - name: Run TestPrlistDBF
         if: ${{github.event.inputs.test_type == 'TestPrlistDBF'}}
-        run: pytest -n auto --env=prod tests/file_processing/product_import_from_files/test_prlist_dbf.py
+        run: pytest -n auto --env=dev tests/file_processing/product_import_from_files/test_prlist_dbf.py
+        env:
+          SSH_KEY: ${{secrets.SSH_KEY}}
         
       - name: Run TestAuthorization
         if: ${{github.event.inputs.test_type == 'TestAuthorization'}}
